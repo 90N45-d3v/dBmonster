@@ -1,5 +1,6 @@
 # dBmonster - Track WiFi devices with their signal strength in dBm
 # by 90N45 - github.com/90N45-d3v
+# Mostly not testet at linux, but works stable on MacOS and should work on Linux too
 
 import os
 from sys import platform
@@ -63,7 +64,7 @@ def mode1_update(i): # Track MAC address
 		dBm_signal = int(os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " 2> /dev/null | cut -d , -f 2-").read())
 	elif platform == "darwin": # MacOS
 		dBm_signal = int(os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " 2> /dev/null | cut -d , -f 2-").read())
-	
+
 	if dBm_signal < 0: # If recieved dBm is normal, use it
 		global dBm_fallback
 		dBm_fallback = dBm_signal # Save current signal for line 50

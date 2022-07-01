@@ -1,6 +1,6 @@
 # dBmonster - Track WiFi devices with their signal strength in dBm
 # by 90N45 - github.com/90N45-d3v
-# stable: tested on MacOS and Linux
+# beta: really unstable and has errors on all platform's...
 
 import os
 from sys import platform
@@ -49,17 +49,29 @@ def root_check():
 		print("\n [!] This tool needs root privileges (try: sudo)\n")
 		exit()
 
+def sound_message():
+	# Play sound if found...
+	if platform == "linux": # Linux
+		dBm_signal = os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " > /dev/null 2> /dev/null").read()
+	elif platform == "darwin": # MacOS
+		dBm_signal = os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " > /dev/null 2> /dev/null").read()
+		print("\a\a")
+
 
 def mode1_update(i): # Track MAC address
 
 	if platform == "linux": # Linux
-		dBm_signal = int(os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " 2> /dev/null | cut -d , -f 2-").read())
+		raw_dBm_signal = os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " 2> /dev/null").read()
 	elif platform == "darwin": # MacOS
-		dBm_signal = int(os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " 2> /dev/null | cut -d , -f 2-").read())
-	
+		raw_dBm_signal = os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " 2> /dev/null").read()
+
+	driver_dBm_value = int(os.popen("echo " + raw_dBm_signal + " | fgrep -o \",\" | grep -c \"^\"").read()) + 1
+	dBm_signal = int(os.popen("echo " + raw_dBm_signal + " | cut -d \",\" -f").read())
+
+	global dBm_fallback
+	dBm_fallback = dBm_signal # Save current signal for line 50
+
 	if dBm_signal < 0: # If recieved dBm is normal, use it
-		global dBm_fallback
-		dBm_fallback = dBm_signal # Save current signal for line 50
 		x_values.append(next(index))
 		y_values.append(dBm_signal)
 		plt.cla()
@@ -105,6 +117,7 @@ while True:
 		print("\n [!] Setting WiFi interface to channel " + channel + "...")
 		set_channel()
 		print("\n [!] Searching for " + device + " on channel " + channel + "...")
+		sound_message()
 		fig.canvas.manager.set_window_title("dBmonster: " + device) # Window title
 		animation = FuncAnimation(fig, mode1_update, 2000)
 		plt.show()
