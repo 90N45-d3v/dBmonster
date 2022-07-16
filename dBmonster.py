@@ -107,10 +107,10 @@ while True:
 		exit()
 
 	if platform == "linux":
-		print("\n  --- WiFi INTERFACES ---")
+		print("\n\n  --- WiFi INTERFACES ---")
 		os.system("airmon-ng")
 
-	mode = input("\n\n  --- OPTIONS ---\n[1]\tTrack MAC address\n[2]\tRecon\n[0]\tEXIT\n\n  [*] Choose: ")
+	mode = input("\n\n  --- OPTIONS ---\n[1]\tTrack MAC address\n[2]\tRecon\n[0]\tEXIT\n\n  [*] Choose option: ")
 
 	if mode == "1": # Track MAC address
 		interface = input("\n  [*] Your WiFi interface: ")
