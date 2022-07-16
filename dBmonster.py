@@ -37,7 +37,7 @@ def interface_check():
 
 		if mon_check == 0: # If interface isn't in monitor mode:
 			print("\n [!] Setting " + interface + " in monitor mode...\n")
-			os.popen("ip link set " + interface + " down && iw " + interface + " set type managed && ip link set " + interface + " up")
+			os.popen("ip link set " + interface + " down && iw " + interface + " set type monitor && ip link set " + interface + " up")
 
 	if platform == "darwin": # On MacOS you only need to enable WiFi
 		os.popen("airport " + interface + " -z") # Disconnect from WiFi network if connected
