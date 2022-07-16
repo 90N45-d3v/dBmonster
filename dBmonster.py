@@ -36,7 +36,7 @@ def interface_check():
 		mon_check = os.popen("iwconfig " + interface + " | grep Monitor -c").read()
 
 		if mon_check == "0\n": # If interface isn't in monitor mode:
-			print("\n [!] Setting " + interface + " in monitor mode...\n")
+			print("\n [!] Setting " + interface + " in monitor mode...")
 			os.system("ip link set " + interface + " down")
 			os.system("iw " + interface + " set type monitor")
 			os.system("ip link set " + interface + " up")
