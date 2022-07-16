@@ -37,7 +37,9 @@ def interface_check():
 
 		if mon_check == 0: # If interface isn't in monitor mode:
 			print("\n [!] Setting " + interface + " in monitor mode...\n")
-			os.popen("ip link set " + interface + " down && iw " + interface + " set type monitor && ip link set " + interface + " up")
+			os.system("ip link set " + interface + " down")
+			os.system("iw " + interface + " set type monitor")
+			os.system("ip link set " + interface + " up")
 
 	if platform == "darwin": # On MacOS you only need to enable WiFi
 		os.popen("airport " + interface + " -z") # Disconnect from WiFi network if connected
@@ -55,7 +57,8 @@ def sound_message():
 		dBm_signal = os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " > /dev/null 2> /dev/null").read()
 	elif platform == "darwin": # MacOS
 		dBm_signal = os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " > /dev/null 2> /dev/null").read()
-		print("\a\a")
+	print("\n [!] STARTING TRACKING...")
+	print("\a\a")
 
 
 def mode1_update(i): # Track MAC address
@@ -80,7 +83,7 @@ def mode1_update(i): # Track MAC address
 		plt.plot(x_values, y_values)
 		plt.pause(0.003)
 
-def mode3_recon(): # Scan for WiFi devices... On MacOS only Networks
+def mode2_recon(): # Scan for WiFi devices... On MacOS only Networks
 	if platform == "linux": # Linux
 		print("\n")
 		os.system("airodump-ng " + interface)
@@ -122,8 +125,8 @@ while True:
 	if mode == "2": # Recon
 		interface = input("\n  [*] Your WiFi interface: ")
 		os.system("clear")
-		mode3_recon()
-		input("\n [!] Press the enter key to continue... (For tracking, remind the MAC and channel your target has!)")
+		mode2_recon()
+		input("\n [!] Press the enter key to continue... (For tracking, remind the MAC address and channel your target has!)")
 		continue
 
 	if mode == "0": # EXIT
