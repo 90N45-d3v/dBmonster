@@ -33,9 +33,9 @@ def set_channel(): # Change channel on your WiFi card
 
 def interface_check():
 	if platform == "linux": # On linux, your WiFi card needs to be set in monitor mode by yourself
-		mon_check = os.popen("iwconfig " + interface + " | grep Monitor -c")
+		mon_check = os.popen("iwconfig " + interface + " | grep Monitor -c").read()
 
-		if mon_check == 0: # If interface isn't in monitor mode:
+		if mon_check == "0\n": # If interface isn't in monitor mode:
 			print("\n [!] Setting " + interface + " in monitor mode...\n")
 			os.system("ip link set " + interface + " down")
 			os.system("iw " + interface + " set type monitor")
