@@ -13,7 +13,7 @@ def root_check():
 	user = os.popen("whoami") # Get current user who runs dBmonster
 
 	if user.read() != "root\n":
-		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " You need root privileges (try: sudo)\n")
+		print("\033[38;5;206m" + " [!]" + "\033[39m" + " You need root privileges (try: sudo)\n")
 		exit()
 
 ###  workflow
