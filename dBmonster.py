@@ -9,17 +9,16 @@ import matplotlib.pyplot as plt
 from matplotlib import style
 from matplotlib.animation import FuncAnimation
 
-
 x_values = []
 y_values = []
-index = count()
+index = count() # x axis is count of dBm values
 
 fig = plt.gcf()
 
 ### functions
 
 def banner():
-	print("\n _(`-')    <-.(`-')  <-. (`-')             <-. (`-')_  (`-').-> (`-')       (`-')  _    (`-')  \n( (OO ).->  __( OO)     \\(OO )_      .->      \\( OO) ) ( OO)_   ( OO).->    ( OO).-/ <-.(OO )  \n\\    .'_  '-'---.\\  ,--./  ,-.)(`-')----. ,--./ ,--/ (_)--\\_)  /    '._   (,------. ,------,) \n'`'-..__) | .-. (/  |   `.'   |( OO).-.  '|   \\ |  | /    _ /  |'--...__)  |  .---' |   /`. ' \n|  |  ' | | '-' `.) |  |'.'|  |( _) | |  ||  . '|  |)\\_..`--.  `--.  .--' (|  '--.  |  |_.' | \n|  |  / : | /`'.  | |  |   |  | \\|  |)|  ||  |\\    | .-._)   \\    |  |     |  .--'  |  .   .' \n|  '-'  / | '--'  / |  |   |  |  '  '-'  '|  | \\   | \\       /    |  |     |  `---. |  |\\  \\  \n`------'  `------'  `--'   `--'   `-----' `--'  `--'  `-----'     `--'     `------' `--' '--'\nby github.com/90N45-d3v")
+	print("\033[38;5;27m" + "\n _(`-')    <-.(`-')  <-. (`-')             <-. (`-')_  (`-').-> (`-')       (`-')  _    (`-')  \n( (OO ).->  __( OO)     \\(OO )_      .->      \\( OO) ) ( OO)_   ( OO).->    ( OO).-/ <-.(OO )  \n\\    .'_  '-'---.\\  ,--./  ,-.)(`-')----. ,--./ ,--/ (_)--\\_)  /    '._   (,------. ,------,) \n'`'-..__) | .-. (/  |   `.'   |( OO).-.  '|   \\ |  | /    _ /  |'--...__)  |  .---' |   /`. ' \n|  |  ' | | '-' `.) |  |'.'|  |( _) | |  ||  . '|  |)\\_..`--.  `--.  .--' (|  '--.  |  |_.' | \n|  |  / : | /`'.  | |  |   |  | \\|  |)|  ||  |\\    | .-._)   \\    |  |     |  .--'  |  .   .' \n|  '-'  / | '--'  / |  |   |  |  '  '-'  '|  | \\   | \\       /    |  |     |  `---. |  |\\  \\  \n`------'  `------'  `--'   `--'   `-----' `--'  `--'  `-----'     `--'     `------' `--' '--'" + "\033[38;5;172m" + "\nby github.com/90N45-d3v" + "\033[39m")
 
 def set_channel(): # Change channel on your WiFi card
 	if platform == "linux": # Linux
@@ -36,7 +35,7 @@ def interface_check():
 		mon_check = os.popen("iwconfig " + interface + " | grep Monitor -c").read()
 
 		if mon_check == "0\n": # If interface isn't in monitor mode:
-			print("\n [!] Setting " + interface + " in monitor mode...")
+			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Setting " + interface + " in monitor mode...")
 			os.system("ip link set " + interface + " down")
 			os.system("iw " + interface + " set type monitor")
 			os.system("ip link set " + interface + " up")
@@ -48,7 +47,7 @@ def root_check():
 	user = os.popen("whoami") # Get current user who runs dBmonster
 
 	if user.read() != "root\n":
-		print("\n [!] This tool needs root privileges (try: sudo)\n")
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " This tool needs root privileges (try: sudo)\n")
 		exit()
 
 def sound_message():
@@ -57,7 +56,7 @@ def sound_message():
 		dBm_signal = os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " > /dev/null 2> /dev/null").read()
 	elif platform == "darwin": # MacOS
 		dBm_signal = os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " > /dev/null 2> /dev/null").read()
-	print("\n [!] STARTING TRACKING...")
+	print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " STARTING TRACKING...")
 	print("\a\a")
 
 
@@ -103,23 +102,23 @@ while True:
 	root_check()
 
 	if platform == "win32": # Windows
-		print(" [?] WTF!?\n*** ONLY LINUX OR MAC ***")
+		print("\033[48;5;9m" + " [?] WTF!?\n*** ONLY LINUX OR MAC ***" + "\033[39m")
 		exit()
 
-	if platform == "linux":
-		print("\n\n  --- WiFi INTERFACES ---")
+	if platform == "linux": # Linux
+		print("\033[38;1;231m" + "\n\n  --- WiFi INTERFACES ---" + "\033[0m") # List WiFi INTERFACES on linux
 		os.system("airmon-ng")
 
-	mode = input("\n\n  --- OPTIONS ---\n\n[1]\tTrack MAC address\n[2]\tRecon\n[0]\tEXIT\n\n  [*] Choose option: ")
+	mode = input("\033[38;1;231m" + "\n\n  --- OPTIONS ---\n\n[1]" + "\033[0m" + "\tTrack MAC address\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tRecon\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tEXIT" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose option: ")
 
 	if mode == "1": # Track MAC address
-		interface = input("\n  [*] Your WiFi interface: ")
-		device = input("  [*] MAC address to track: ")
-		channel = input("  [*] WiFi channel from MAC address to track: ")
+		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
+		device = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " MAC address to track: ")
+		channel = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " WiFi channel from MAC address to track: ")
 		interface_check()
-		print("\n [!] Setting WiFi interface to channel " + channel + "...")
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Setting WiFi interface to channel " + channel + "...")
 		set_channel()
-		print("\n [!] Searching for " + device + " on channel " + channel + "...")
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Searching for " + device + " on channel " + channel + "...")
 		sound_message()
 		fig.canvas.manager.set_window_title("dBmonster: " + device) # Window title
 		animation = FuncAnimation(fig, mode1_update, 2000)
@@ -127,12 +126,12 @@ while True:
 		exit()
 
 	if mode == "2": # Recon
-		interface = input("\n  [*] Your WiFi interface: ")
+		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
 		os.system("clear")
 		mode2_recon()
-		input("\n [!] Press the enter key to continue... (For tracking, remind the MAC address and channel your target has!)")
+		input("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Press the enter key to continue... (For tracking, remind the MAC address and channel your target has!)")
 		continue
 
 	if mode == "0": # EXIT
-		print("\nGOOD BYE!\n")
+		print("\033[38;1;231m" + "\nGOOD BYE!\n" + "\033[0m")
 		exit()
