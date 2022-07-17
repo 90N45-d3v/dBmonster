@@ -36,6 +36,7 @@ def interface_check():
 
 		if mon_check == "0\n": # If interface isn't in monitor mode:
 			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Setting " + interface + " in monitor mode...")
+			os.system("nmcli dev set " + interface + " managed no")
 			os.system("ip link set " + interface + " down")
 			os.system("iw " + interface + " set type monitor")
 			os.system("ip link set " + interface + " up")
