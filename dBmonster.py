@@ -86,7 +86,7 @@ def mode1_update(i): # Track MAC address
 def mode2_recon(): # Scan for WiFi devices... On MacOS only Networks
 	if platform == "linux": # Linux
 		print("\n")
-		os.system("airodump-ng " + interface)
+		os.system("airodump-ng " + interface + " --band abg") # --band for scanning 2.4 GHz and 5 GHz
 
 	elif platform == "darwin": # MacOS
 		print("\n")
@@ -117,7 +117,7 @@ while True:
 		device = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " MAC address to track: ")
 		channel = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " WiFi channel from MAC address to track: ")
 		interface_check()
-		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Setting WiFi interface to channel " + channel + "...")
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Setting " + interface + " to channel " + channel + "...")
 		set_channel()
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Searching for " + device + " on channel " + channel + "...")
 		sound_message()
