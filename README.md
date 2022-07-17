@@ -13,17 +13,3 @@
  These dBm values will be plotted to a graph with <a href="https://matplotlib.org/">matplotlib</a>.
  It can help you to identify the exact location of nearby WiFi devices (use a <a href="https://simplewifi.com/blogs/news/omni-directional-vs-antennadirectional-antenna">directional WiFi antenna</a> for the best results) or to find out how your <a href="https://www.makeuseof.com/10-diy-long-range-wi-fi-antennas-you-can-make-at-home/">self made antenna</a> works the best.
 </p>
-
-#### dBmonster-stable.py
-- Tested on MacOS and Linux
-- Works stable without any errors
-- Could have some errors on other computers/systems
-
-#### dBmonster.py 
-- Tested on MacOS
-- Works stable without any errors on MacOS
-- Probably not working on Linux
-
-#### dBmonster-beta.py
-- Currently in development with many errors
-- Does not work on MacOS or Linux
