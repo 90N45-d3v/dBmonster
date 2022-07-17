@@ -1,6 +1,5 @@
 # dBmonster - Track WiFi devices with their signal strength in dBm
 # by 90N45 - github.com/90N45-d3v
-# Mostly not testet at linux, but works stable on MacOS and should work on Linux too
 
 import os
 from sys import platform
