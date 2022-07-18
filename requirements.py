@@ -16,6 +16,13 @@ def root_check():
 		print("\033[38;5;206m" + " [!]" + "\033[39m" + " You need root privileges (try: sudo)\n")
 		exit()
 
+def anti_root_check():
+	user = os.popen("whoami") # Get current user who runs dBmonster
+
+	if user.read() == "root\n":
+		print("\033[38;5;206m" + " [!]" + "\033[39m" + " Pleasy do not run this installer with root privileges. (Homebrew can not install tools...)\n")
+		exit()
+
 ###  workflow
 
 banner()
@@ -25,7 +32,8 @@ if platform == "darwin": # MacOS
 	brew_check = os.popen("brew -v 2> /dev/null | head -n 1 | grep Homebrew -c").read() # Check if homebrew is installed
 
 	if brew_check == "1\n":
-		print("\033[38;5;206m" + "[!]" + "\033[39m" + " Installing tshark with Homebrew...")
+		anti_root_check()
+		print("\033[38;5;206m" + "[!]" + "\033[39m" + " Installing tshark with Homebrew...") # This don't work with sudo
 		os.system("brew install wireshark") # Can only install wireshark & tshark together
 
 	else:
