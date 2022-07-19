@@ -37,18 +37,18 @@ sudo python requirements.py
 sudo python dBmonster.py
 ````
 
-## Working on...
-- Capture signal strength data for offline graphs 
-- Generate graphs from normal wireshark.pcapng file
-- Generate multiple graphs in one coordinate system
-
 ## Has been successfully tested  on...
 
 | Platform 💻 | WiFi Adapter 📡 |
 | ------- | --------- |
 | Kali Linux | ALFA AWUS036NHA, DIY [Bi-Quad WiFi Antenna](https://www.instructables.com/Bi-Quad-WiFi-Antenna/) |
 | MacOS Monterey | Internal card 802.11 a/b/g/n/ac (MBP 2019) |
-###### * *should work on any MacOS or Debian based system and with every WiFi card which supports monitor-mode*
+###### * *should work on any MacOS or Debian based system and with every WiFi card that supports monitor-mode*
+
+## Working on...
+- Capture signal strength data for offline graphs 
+- Generate graphs from normal wireshark.pcapng file
+- Generate multiple graphs in one coordinate system
 
 ### Additional information 
 - If the tracked WiFi device is out of range or doesn't send any packets, the graph stops plotting till there is new data. So don't panic ;)
