@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
- With dBmonster you are able to scan for nearby WiFi devices and track them trough the signal strength (<a href="https://en.m.wikipedia.org/wiki/DBm">dBm</a>) of their sent packets.
+ With dBmonster you are able to scan for nearby WiFi devices and track them trough the signal strength (<a href="https://en.m.wikipedia.org/wiki/DBm">dBm</a>) of their sent packets (sniffed with <a href="https://tshark.dev/setup/about/#what-is-tsharkdev">TShark</a>).
  These dBm values will be plotted to a graph with <a href="https://matplotlib.org/">matplotlib</a>.
  It can help you to identify the exact location of nearby WiFi devices (use a <a href="https://simplewifi.com/blogs/news/omni-directional-vs-antennadirectional-antenna">directional WiFi antenna</a> for the best results) or to find out how your <a href="https://www.makeuseof.com/10-diy-long-range-wi-fi-antennas-you-can-make-at-home/">self made antenna</a> works the best (<a href="https://help.ui.com/hc/en-us/articles/115012664088-UniFi-Introduction-to-Antenna-Radiation-Patterns">antenna radiation patterns</a>).
 </p>
@@ -21,8 +21,8 @@
 | Track & scan on 2.4GHz | ✅ | ✅ |
 | Track & scan on 5GHz | ✅ | ✅ |
 | Scanning for AP | ✅ | ✅ |
-| Scanning for clients | ✅ | |
-| Beep when signal found | ❓ | ✅ |
+| Scanning for STA | ✅ | |
+| Beep when device found | ❓ | ✅ |
 | Listing WiFi interfaces | ✅ | |
 
 ## Installation
@@ -38,10 +38,19 @@ sudo python dBmonster.py
 ````
 
 ## Working on...
-- Capture signal strength data for offline graphs
+- Capture signal strength data for offline graphs 
 - Generate graphs from normal wireshark.pcapng file
 - Generate multiple graphs in one coordinate system
 
+## Has been successfully tested  on...
+
+| Platform 💻 | WiFi Adapter 📡 |
+| ------- | --------- |
+| Kali Linux | ALFA AWUS036NHA, DIY [Bi-Quad WiFi Antenna](https://www.instructables.com/Bi-Quad-WiFi-Antenna/) |
+| MacOS Monterey | Internal card 802.11 a/b/g/n/ac (MBP 2019) |
+###### * *should work on any MacOS or Debian based system and with every WiFi card which supports monitor-mode*
+
 ### Additional information 
-- dBmonster was only tested on MacOS and Kali Linux... If there are any errors or something is going wrong, contact me.
 - If the tracked WiFi device is out of range or doesn't send any packets, the graph stops plotting till there is new data. So don't panic ;)
+- dBmonster wasn't tested on all systems... If there are any errors or something is going wrong, contact me.
+- If you used dBmonster on a non-listed Platform or WiFi Adapter, please open an issue (with Platform and WiFi Adapter information) and I will add your specification to the README.md
