@@ -12,6 +12,7 @@ x_values = []
 y_values = []
 index = count() # x axis is count of dBm values
 
+ax = plt.axes()
 fig = plt.gcf()
 
 ### functions
@@ -67,19 +68,21 @@ def mode1_update(i): # Track MAC address
 	elif platform == "darwin": # MacOS
 		dBm_signal = int(os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " 2> /dev/null | cut -d , -f 2-").read())
 
+	global dBm_fallback
+	dBm_fallback = 0
+
 	if dBm_signal < 0: # If recieved dBm is normal, use it
-		global dBm_fallback
 		dBm_fallback = dBm_signal # Save current signal for line 50
 		x_values.append(next(index))
 		y_values.append(dBm_signal)
 		plt.cla()
-		plt.plot(x_values, y_values)
+		plt.plot(x_values, y_values, color='darkorange')
 		plt.pause(0.003)
 	else: # If recieved dBm signal is broken, use last known dBm value (dBm_fallback)
 		x_values.append(next(index))
 		y_values.append(dBm_fallback)
 		plt.cla()
-		plt.plot(x_values, y_values)
+		plt.plot(x_values, y_values, color='darkorange')
 		plt.pause(0.003)
 
 def mode2_recon(): # Scan for WiFi devices... On MacOS only Networks
@@ -121,6 +124,12 @@ while True:
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Searching for " + device + " on channel " + channel + "...")
 		sound_message()
 		fig.canvas.manager.set_window_title("dBmonster: " + device) # Window title
+		fig.set_facecolor('black')
+		ax.set_facecolor('black')
+		ax.spines['left'].set_color('deepskyblue')
+		ax.spines['bottom'].set_color('deepskyblue')
+		ax.tick_params(axis='x', colors='deepskyblue')
+		ax.tick_params(axis='y', colors='deepskyblue')
 		animation = FuncAnimation(fig, mode1_update, 2000)
 		plt.show()
 		exit()
