@@ -64,7 +64,7 @@ Now kill them with the following command:
 ````
 sudo kill <PID OF PROCESS>
 ````
-###### * *Please contact me on twitter, if you have anymore problems*
+###### * *Please contact me on [twitter](https://twitter.com/90N45), if you have anymore problems*
 
 ## Working on...
 - Capture signal strength data for offline graphs 
