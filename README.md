@@ -18,7 +18,7 @@
 - [Features on Linux and MacOS](https://github.com/90N45-d3v/dBmonster#features-on-linux-and-macos)
 - [Installation](https://github.com/90N45-d3v/dBmonster#installation)
 - [Has been successfully tested  on...](https://github.com/90N45-d3v/dBmonster#has-been-successfully-tested--on)
-- [Troubleshooting for MacOS](https://github.com/90N45-d3v#troubleshooting-for-macos)
+- [Troubleshooting for MacOS](https://github.com/90N45-d3v/dBmonster#troubleshooting-for-macos)
 - [Working on...](https://github.com/90N45-d3v/dBmonster#working-on)
 - [Additional information](https://github.com/90N45-d3v/dBmonster#additional-information)
 
