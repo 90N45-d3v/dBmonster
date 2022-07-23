@@ -68,22 +68,20 @@ def mode1_update(i): # Track MAC address
 	elif platform == "darwin": # MacOS
 		dBm_signal = int(os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " 2> /dev/null | cut -d , -f 2-").read())
 
-	global dBm_fallback
-	dBm_fallback = 0
+	x_values.append(next(index))
 
 	if dBm_signal < 0: # If recieved dBm is normal, use it
+		global dBm_fallback
 		dBm_fallback = dBm_signal # Save current signal for line 50
-		x_values.append(next(index))
 		y_values.append(dBm_signal)
-		plt.cla()
-		plt.plot(x_values, y_values, color='darkorange')
-		plt.pause(0.003)
-	else: # If recieved dBm signal is broken, use last known dBm value (dBm_fallback)
-		x_values.append(next(index))
+	elif 'dBm_fallback' in globals(): # If recieved dBm signal is broken, use last known dBm value (dBm_fallback)
 		y_values.append(dBm_fallback)
-		plt.cla()
-		plt.plot(x_values, y_values, color='darkorange')
-		plt.pause(0.003)
+	else: # If recieved dBm signal is broken, but there is no fallback, use -65 dBm (Can only be the first recieved signal)
+		y_values.append(-60)
+
+	plt.cla()
+	plt.plot(x_values, y_values, color='darkorange')
+	plt.pause(0.003)
 
 def mode2_recon(): # Scan for WiFi devices... On MacOS only Networks
 	if platform == "linux": # Linux
