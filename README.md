@@ -15,12 +15,12 @@
 </p>
 
 ## Topics
-- [Features on Linux and MacOS](https://github.com/90N45-d3v/dBmonster/edit/main/README.md#features-on-linux-and-macos)
-- [Installation](https://github.com/90N45-d3v/dBmonster/edit/main/README.md#installation)
-- [Has been successfully tested  on...](https://github.com/90N45-d3v/dBmonster/edit/main/README.md#has-been-successfully-tested--on)
-- [Troubleshooting for MacOS](https://github.com/90N45-d3v/dBmonster/edit/main/README.md#troubleshooting-for-macos)
-- [Working on...](https://github.com/90N45-d3v/dBmonster/edit/main/README.md#working-on)
-- [Additional information](https://github.com/90N45-d3v/dBmonster/edit/main/README.md#additional-information)
+- [Features on Linux and MacOS](https://github.com/90N45-d3v/dBmonster#features-on-linux-and-macos)
+- [Installation](https://github.com/90N45-d3v/dBmonster#installation)
+- [Has been successfully tested  on...](https://github.com/90N45-d3v/dBmonster#has-been-successfully-tested--on)
+- [Troubleshooting for MacOS](https://github.com/90N45-d3v#troubleshooting-for-macos)
+- [Working on...](https://github.com/90N45-d3v/dBmonster#working-on)
+- [Additional information](https://github.com/90N45-d3v/dBmonster#additional-information)
 
 ## Features on Linux and MacOS
 
