@@ -18,7 +18,7 @@ fig = plt.gcf()
 ### functions
 
 def banner():
-	print("\033[38;5;27m" + "\n _(`-')    <-.(`-')  <-. (`-')             <-. (`-')_  (`-').-> (`-')       (`-')  _    (`-')  \n( (OO ).->  __( OO)     \\(OO )_      .->      \\( OO) ) ( OO)_   ( OO).->    ( OO).-/ <-.(OO )  \n\\    .'_  '-'---.\\  ,--./  ,-.)(`-')----. ,--./ ,--/ (_)--\\_)  /    '._   (,------. ,------,) \n'`'-..__) | .-. (/  |   `.'   |( OO).-.  '|   \\ |  | /    _ /  |'--...__)  |  .---' |   /`. ' \n|  |  ' | | '-' `.) |  |'.'|  |( _) | |  ||  . '|  |)\\_..`--.  `--.  .--' (|  '--.  |  |_.' | \n|  |  / : | /`'.  | |  |   |  | \\|  |)|  ||  |\\    | .-._)   \\    |  |     |  .--'  |  .   .' \n|  '-'  / | '--'  / |  |   |  |  '  '-'  '|  | \\   | \\       /    |  |     |  `---. |  |\\  \\  \n`------'  `------'  `--'   `--'   `-----' `--'  `--'  `-----'     `--'     `------' `--' '--'" + "\033[38;5;172m" + "\nby github.com/90N45-d3v" + "\033[39m")
+	print("\033[38;5;172m" + "\n                                                   --=-+-=--\n                                                        \\\n                                                   ---=--+--=---\n                 ( ( >*< ) )                             |\\\n     _  ____          |                      _     ---=----+----=---\n    | ||  _ \\         |                     | |          |\n  __| || |_) | _ __  /_\\   ___   _ __   ___ | |_   ___  _|__\n / _` ||  _ < | '_ `'_  | / _ \\ | '_ \\ / __||  _| / _ \\|  __|\n| (_| || |_) || | | | | || (_) || | | |\\__ \\| |_ |  __/| |\n \\__,_||____/ |_| |_| |_| \\___/ |_| |_||___/ \\__| \\___||_|" + "\033[38;5;27m" + "\nby github.com/90N45-d3v" + "\033[39m")
 
 def set_channel(): # Change channel on your WiFi card
 	if platform == "linux": # Linux
@@ -80,7 +80,7 @@ def mode1_update(i): # Track MAC address
 		y_values.append(-60)
 
 	plt.cla()
-	plt.plot(x_values, y_values, color='darkorange')
+	plt.plot(x_values, y_values, color='#ff9900')
 	plt.pause(0.003)
 
 def mode2_recon(): # Scan for WiFi devices... On MacOS only Networks
@@ -122,14 +122,15 @@ while True:
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Searching for " + device + " on channel " + channel + "...")
 		sound_message()
 		fig.canvas.manager.set_window_title("dBmonster: " + device) # Window title
-		fig.set_facecolor('black')
-		ax.set_facecolor('black')
-		ax.spines['left'].set_color('deepskyblue')
-		ax.spines['bottom'].set_color('deepskyblue')
-		ax.tick_params(axis='x', colors='deepskyblue')
-		ax.tick_params(axis='y', colors='deepskyblue')
+		fig.set_facecolor('black') # Window bg color
+		ax.set_facecolor('black') # Graph bg color
+		ax.spines['left'].set_color('#3f64d9') # Graph axis color (left)
+		ax.spines['bottom'].set_color('#3f64d9') # Graph axis color (bottom)
+		ax.tick_params(axis='x', colors='#3f64d9') # Graph x axis text color
+		ax.tick_params(axis='y', colors='#3f64d9') # Graph y axis text color
 		animation = FuncAnimation(fig, mode1_update, 2000)
 		plt.show()
+		print("\033[38;1;231m" + "\nGOOD BYE!\n" + "\033[0m")
 		exit()
 
 	if mode == "2": # Recon
