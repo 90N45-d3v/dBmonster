@@ -1,6 +1,5 @@
+![dBmonster-bat-banner](https://user-images.githubusercontent.com/79598596/181930036-ebc45598-d6dd-4291-9c4b-05f7b03bde38.png)
 <p align="center">
- <img src="https://user-images.githubusercontent.com/79598596/181930036-ebc45598-d6dd-4291-9c4b-05f7b03bde38.png">
- <br>
  <img src="https://img.shields.io/badge/Made%20with-Python-blue">
  <img src="https://img.shields.io/github/license/90N45-d3v/dBmonster.svg">
  <img src="https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg">
