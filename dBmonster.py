@@ -107,8 +107,12 @@ while True:
 		exit()
 
 	if platform == "linux": # Linux
-		print("\033[38;1;231m" + "\n\n  --- WiFi INTERFACES ---" + "\033[0m") # List WiFi INTERFACES on linux
+		print("\033[38;1;231m" + "\n\n  --- WiFi INTERFACES ---" + "\033[0m") # List WiFi INTERFACES
 		os.system("airmon-ng")
+
+	if platform == "darwin": # MacOS
+		print("\033[38;1;231m" + "\n\n  --- WiFi INTERFACES ---" + "\033[0m\n") # List WiFi INTERFACES
+		os.system("networksetup -listallhardwareports | grep -A3 Wi-Fi | grep -A1 Device")
 
 	mode = input("\033[38;1;231m" + "\n\n  --- OPTIONS ---\n\n[1]" + "\033[0m" + "\tTrack MAC address\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tRecon\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tEXIT" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose option: ")
 
