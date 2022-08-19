@@ -26,12 +26,12 @@
 
 | Feature | Linux | MacOS |
 | ------- | --------- | --------- |
+| Listing WiFi interfaces | ✅ | ✅ |
 | Track & scan on 2.4GHz | ✅ | ✅ |
 | Track & scan on 5GHz | ✅ | ✅ |
 | Scanning for AP | ✅ | ✅ |
 | Scanning for STA | ✅ | |
 | Beep when device found | ❓ | ✅ |
-| Listing WiFi interfaces | ✅ | |
 
 ## Installation
 ````
