@@ -95,6 +95,17 @@ def mode2_recon(): # Scan for WiFi devices... On MacOS only Networks
 	else:
 		exit()
 
+def mode3_from_file(): # Track MAC address from file
+
+	os.system("tshark -r " + file + " -T fields -e radiotap.dbm_antsignal -Y \"wlan.sa == " + device + "\" 2> /dev/null | cut -d , -f 2- > tmp_dBmonster.txt")
+
+	with open('tmp_dBmonster.txt') as dBm_signal:
+		for line in dBm_signal:
+			x_values.append(next(index))
+			y_values.append(int(line))
+
+	plt.plot(x_values, y_values, color='#ff9900')
+
 ### workflow
 
 while True:
@@ -105,16 +116,14 @@ while True:
 	if platform == "win32": # Windows
 		print("\033[48;5;9m" + " [?] WTF!?\n*** ONLY LINUX OR MAC ***" + "\033[39m")
 		exit()
-
-	if platform == "linux": # Linux
+	elif platform == "linux": # Linux
 		print("\033[38;1;231m" + "\n\n  --- WiFi INTERFACES ---" + "\033[0m") # List WiFi INTERFACES
 		os.system("airmon-ng")
-
-	if platform == "darwin": # MacOS
+	elif platform == "darwin": # MacOS
 		print("\033[38;1;231m" + "\n\n  --- WiFi INTERFACES ---" + "\033[0m\n") # List WiFi INTERFACES
 		os.system("networksetup -listallhardwareports | grep -A3 Wi-Fi | grep -A1 Device")
 
-	mode = input("\033[38;1;231m" + "\n\n  --- OPTIONS ---\n\n[1]" + "\033[0m" + "\tTrack MAC address\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tRecon\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tEXIT" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose option: ")
+	mode = input("\033[38;1;231m" + "\n\n  --- OPTIONS ---\n\n[1]" + "\033[0m" + "\tRealtime MAC Address Tracking\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tRecon Of Wireless Landscape\n" + "\033[38;1;231m" + "[3]" + "\033[0m" + "\tTracking From PCAP File\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tEXIT" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
 
 	if mode == "1": # Track MAC address
 		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
@@ -144,6 +153,30 @@ while True:
 		input("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Press the enter key to continue... (For tracking, remind the MAC address and channel your target has!)")
 		continue
 
+	if mode == "3": # Track MAC address from file
+		file = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Enter path to PCAP file: ")
+		device = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " MAC address to track: ")
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Searching for " + device + " in file " + file + "...")
+		fig.canvas.manager.set_window_title("dBmonster: " + device) # Window title
+		ax.set_xlabel('Amount of recieved packets') # Graph x axis label text
+		ax.set_ylabel('Signal strength [dBm]') # Graph y axis label text
+		fig.set_facecolor('black') # Window bg color
+		ax.set_facecolor('black') # Graph bg color
+		ax.spines['left'].set_color('#3f64d9') # Graph axis color (left)
+		ax.spines['bottom'].set_color('#3f64d9') # Graph axis color (bottom)
+		ax.tick_params(axis='x', colors='#3f64d9') # Graph x axis text color
+		ax.tick_params(axis='y', colors='#3f64d9') # Graph y axis text color
+		ax.xaxis.label.set_color('#3f64d9') # Graph x axis label color
+		ax.yaxis.label.set_color('#3f64d9') # Graph y axis label color
+		mode3_from_file()
+		plt.show()
+		if os.path.exists("tmp_dBmonster.txt"):
+			os.remove("tmp_dBmonster.txt")
+		continue
+
 	if mode == "0": # EXIT
+		if os.path.exists("tmp_dBmonster.txt"):
+			os.remove("tmp_dBmonster.txt")
+
 		print("\033[38;1;231m" + "\nGOOD BYE!\n" + "\033[0m")
 		exit()
