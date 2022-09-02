@@ -82,6 +82,7 @@ Press control + c after a few seconds
 - Generate graphs from normal PCAP file (On it right now)
 - Generate multiple graphs in one coordinate system
 - PCAP File Analytics - Analyse PCAP files for captured devices, classify them and calculate the average signal strength
+- [@Hak5](https://github.com/hak5) WiFi Coconut Mode - Transfer sniffed traffic in realtime to dBmonster (Need tester... Contact me on [Twitter](https://twitter.com/90N45))
 
 ### Additional information 
 - If the tracked WiFi device is out of range or doesn't send any packets, the graph stops plotting till there is new data. So don't panic ;)
