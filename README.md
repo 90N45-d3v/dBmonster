@@ -79,9 +79,9 @@ Press control + c after a few seconds
 
 ## Working on...
 - Capture signal strength data for offline graphs 
-- Generate graphs from normal PCAP file (On it right now)
 - Generate multiple graphs in one coordinate system
-- PCAP File Analytics - Analyse PCAP files for captured devices, classify them and calculate the average signal strength
+- MAC address assembler - Associate multiple random MAC addresses because of their similar dBm signal
+- PCAP File Analytics - Analyse PCAP files for captured devices, classify them and calculate the average signal strength (On it right now)
 - [@Hak5](https://github.com/hak5) WiFi Coconut Mode - Transfer sniffed traffic in realtime to dBmonster (Need tester... Contact me on [Twitter](https://twitter.com/90N45))
 
 ### Additional information 
