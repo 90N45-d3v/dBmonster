@@ -60,8 +60,19 @@ def sound_message():
 	print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " STARTING TRACKING...")
 	print("\a\a")
 
+def mode1_recon(): # Scan for WiFi devices... On MacOS only Networks
+	if platform == "linux": # Linux
+		print("\n")
+		os.system("airodump-ng " + interface + " --band abg") # --band for scanning 2.4 GHz and 5 GHz
 
-def mode1_update(i): # Track MAC address
+	elif platform == "darwin": # MacOS
+		print("\n")
+		os.system("airport " + interface + " scan")
+
+	else:
+		exit()
+
+def mode2_update(i): # Track MAC address
 
 	if platform == "linux": # Linux
 		dBm_signal = int(os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " 2> /dev/null | cut -d , -f 2-").read())
@@ -83,21 +94,17 @@ def mode1_update(i): # Track MAC address
 	plt.plot(x_values, y_values, color='#ff9900')
 	plt.pause(0.003)
 
-def mode2_recon(): # Scan for WiFi devices... On MacOS only Networks
-	if platform == "linux": # Linux
-		print("\n")
-		os.system("airodump-ng " + interface + " --band abg") # --band for scanning 2.4 GHz and 5 GHz
+def mode3_file_analytics():
 
-	elif platform == "darwin": # MacOS
-		print("\n")
-		os.system("airport " + interface + " scan")
+	print("\033[38;1;231m" + "\n\n  --- Access Points (MAC Address, SSID) ---\n" + "\033[0m")
+	os.system("tshark -r " + file + " -T fields -e wlan.sa -e wlan.ssid -Y \"wlan.fc.type_subtype == 0x0008 and !(wlan.ssid == \\\"\\\")\" | awk '!seen[$0]++'") # Filter for Beacon frames from AP's
 
-	else:
-		exit()
+	print("\033[38;1;231m" + "\n\n  --- Stations (MAC Address, Searching for SSID) ---\n" + "\033[0m")
+	os.system("tshark -r " + file + " -T fields -e wlan.sa -e wlan.ssid -Y \"wlan.fc.type_subtype == 0x0004 and !(wlan.ssid == \\\"\\\")\" | awk '!seen[$0]++'") # Filter for Probe Request from stations
 
-def mode3_from_file(): # Track MAC address from file
+def mode4_from_file(): # Track MAC address from file
 
-	os.system("tshark -r " + file + " -T fields -e radiotap.dbm_antsignal -Y \"wlan.sa == " + device + "\" 2> /dev/null | cut -d , -f 2- > tmp_dBmonster.txt")
+	os.system("tshark -r " + file + " -T fields -e radiotap.dbm_antsignal -Y \"wlan.sa == " + device + "\" 2> /dev/null | cut -d , -f 2- > tmp_dBmonster.txt") # Filter Signals and save them to temporary file
 
 	with open('tmp_dBmonster.txt') as dBm_signal:
 		for line in dBm_signal:
@@ -123,9 +130,16 @@ while True:
 		print("\033[38;1;231m" + "\n\n  --- WiFi INTERFACES ---" + "\033[0m\n") # List WiFi INTERFACES
 		os.system("networksetup -listallhardwareports | grep -A3 Wi-Fi | grep -A1 Device")
 
-	mode = input("\033[38;1;231m" + "\n\n  --- OPTIONS ---\n\n[1]" + "\033[0m" + "\tRealtime MAC Address Tracking\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tRecon Of Wireless Landscape\n" + "\033[38;1;231m" + "[3]" + "\033[0m" + "\tTracking From PCAP File\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tEXIT" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
+	mode = input("\033[38;1;231m" + "\n\n  --- OPTIONS ---\n\n[1]" + "\033[0m" + "\tRecon Of Wireless Landscape\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tRealtime MAC Address Tracking\n\n" + "\033[38;1;231m" + "[3]" + "\033[0m" + "\tPCAP File Analytics\n" + "\033[38;1;231m" + "[4]" + "\033[0m" + "\tTracking From PCAP File\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tEXIT" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
 
-	if mode == "1": # Track MAC address
+	if mode == "1": # Recon
+		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
+		os.system("clear")
+		mode1_recon()
+		input("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Press the enter key to continue... (For tracking in realtime, remind the MAC Address and channel your target has!)")
+		continue
+
+	if mode == "2": # Track MAC address
 		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
 		device = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " MAC address to track: ")
 		channel = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " WiFi channel from MAC address to track: ")
@@ -141,19 +155,19 @@ while True:
 		ax.spines['bottom'].set_color('#3f64d9') # Graph axis color (bottom)
 		ax.tick_params(axis='x', colors='#3f64d9') # Graph x axis text color
 		ax.tick_params(axis='y', colors='#3f64d9') # Graph y axis text color
-		animation = FuncAnimation(fig, mode1_update, 2000)
+		animation = FuncAnimation(fig, mode2_update, 2000)
 		plt.show()
 		print("\033[38;1;231m" + "\nGOOD BYE!\n" + "\033[0m")
 		exit()
 
-	if mode == "2": # Recon
-		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
-		os.system("clear")
-		mode2_recon()
-		input("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Press the enter key to continue... (For tracking, remind the MAC address and channel your target has!)")
+	if mode == "3": # PCAP File Analytics
+		file = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Enter path to PCAP file: ")
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Analyzing file " + file + "...")
+		mode3_file_analytics()
+		input("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Press the enter key to continue... (For tracking from file, remind the MAC Address your target has!)")
 		continue
 
-	if mode == "3": # Track MAC address from file
+	if mode == "4": # Track MAC address from file
 		file = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Enter path to PCAP file: ")
 		device = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " MAC address to track: ")
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Searching for " + device + " in file " + file + "...")
@@ -168,14 +182,14 @@ while True:
 		ax.tick_params(axis='y', colors='#3f64d9') # Graph y axis text color
 		ax.xaxis.label.set_color('#3f64d9') # Graph x axis label color
 		ax.yaxis.label.set_color('#3f64d9') # Graph y axis label color
-		mode3_from_file()
+		mode4_from_file()
 		plt.show()
-		if os.path.exists("tmp_dBmonster.txt"):
+		if os.path.exists("tmp_dBmonster.txt"): # If it exists, delete temporary file
 			os.remove("tmp_dBmonster.txt")
 		continue
 
 	if mode == "0": # EXIT
-		if os.path.exists("tmp_dBmonster.txt"):
+		if os.path.exists("tmp_dBmonster.txt"): # If it exists, delete temporary file
 			os.remove("tmp_dBmonster.txt")
 
 		print("\033[38;1;231m" + "\nGOOD BYE!\n" + "\033[0m")
