@@ -16,6 +16,7 @@
 
 ## Table of contents
 - [Features on Linux and MacOS](https://github.com/90N45-d3v/dBmonster#features-on-linux-and-macos)
+- [Short preview](https://90n45-d3v.github.io/dBmonster-preview.mp4)
 - [Installation](https://github.com/90N45-d3v/dBmonster#installation)
 - [Has been successfully tested  on...](https://github.com/90N45-d3v/dBmonster#has-been-successfully-tested--on)
 - [Troubleshooting for MacOS](https://github.com/90N45-d3v/dBmonster#troubleshooting-for-macos)
@@ -33,6 +34,10 @@
 | Scanning for AP | ✅ | ✅ |
 | Scanning for STA | ✅ | |
 | Beep when device found | ❓ | ✅ |
+
+## Short preview (Realtime MAC Address Tracking)
+
+https://user-images.githubusercontent.com/79598596/194769598-96d2d838-3db1-4ef5-bf04-77abb75b8d98.mp4
 
 ## Installation
 ````
