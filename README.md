@@ -30,6 +30,7 @@
 | Listing WiFi interfaces | ✅ | ✅ |
 | Track & scan on 2.4GHz | ✅ | ✅ |
 | Track & scan on 5GHz | ✅ | ✅ |
+| Track 802.11 frames (ex. deauth. frames) | ✅ | ✅ |
 | Track & scan PCAP files | ✅ | ✅ |
 | Scanning for AP | ✅ | ✅ |
 | Scanning for STA | ✅ | |
