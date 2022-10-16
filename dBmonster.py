@@ -76,6 +76,20 @@ def graph(): # Plot figure
 	ax.tick_params(axis='x', colors='#3f64d9') # Graph x axis text color
 	ax.tick_params(axis='y', colors='#3f64d9') # Graph y axis text color
 
+def signal_transfer(dBm_signal): # Transfer dBm values to the plot figure
+	x_values.append(next(index))
+	if dBm_signal < 0: # If recieved dBm is normal, use it
+		global dBm_fallback
+		dBm_fallback = dBm_signal # Save current signal for line 50
+		y_values.append(dBm_signal)
+	elif 'dBm_fallback' in globals(): # If recieved dBm signal is broken, use last known dBm value (dBm_fallback)
+		y_values.append(dBm_fallback)
+	else: # If recieved dBm signal is broken, but there is no fallback, use -65 dBm (Can only be the first recieved signal)
+		y_values.append(-60)
+	plt.cla()
+	plt.plot(x_values, y_values, color='#ff9900')
+	plt.pause(0.003)
+
 def mode1_recon(): # Scan for WiFi devices... On MacOS only Networks
 	if platform == "linux": # Linux
 		print("\n")
@@ -94,18 +108,7 @@ def mode2_update(i): # Track MAC address
 	elif platform == "darwin": # MacOS
 		dBm_signal = int(os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " 2> /dev/null | cut -d , -f 2-").read())
 
-	x_values.append(next(index))
-	if dBm_signal < 0: # If recieved dBm is normal, use it
-		global dBm_fallback
-		dBm_fallback = dBm_signal # Save current signal for line 50
-		y_values.append(dBm_signal)
-	elif 'dBm_fallback' in globals(): # If recieved dBm signal is broken, use last known dBm value (dBm_fallback)
-		y_values.append(dBm_fallback)
-	else: # If recieved dBm signal is broken, but there is no fallback, use -60 dBm (Can only be the first recieved signal)
-		y_values.append(-60)
-	plt.cla()
-	plt.plot(x_values, y_values, color='#ff9900')
-	plt.pause(0.003)
+	signal_transfer(dBm_signal)
 
 def mode3_deauth_frames(i): # Deauthentication Frames
 	if platform == "linux":
@@ -113,18 +116,7 @@ def mode3_deauth_frames(i): # Deauthentication Frames
 	elif platform == "darwin":
 		dBm_signal = int(os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal -f \"type mgt subtype deauth\" 2> /dev/null | cut -d , -f 2-").read())
 
-	x_values.append(next(index))
-	if dBm_signal < 0: # If recieved dBm is normal, use it
-		global dBm_fallback
-		dBm_fallback = dBm_signal # Save current signal for line 50
-		y_values.append(dBm_signal)
-	elif 'dBm_fallback' in globals(): # If recieved dBm signal is broken, use last known dBm value (dBm_fallback)
-		y_values.append(dBm_fallback)
-	else: # If recieved dBm signal is broken, but there is no fallback, use -65 dBm (Can only be the first recieved signal)
-		y_values.append(-60)
-	plt.cla()
-	plt.plot(x_values, y_values, color='#ff9900')
-	plt.pause(0.003)
+	signal_transfer(dBm_signal)
 
 def mode3_beacon_frames(i): # Beacon Frames
 	if platform == "linux":
@@ -132,18 +124,7 @@ def mode3_beacon_frames(i): # Beacon Frames
 	elif platform == "darwin":
 		dBm_signal = int(os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal -f \"type mgt subtype beacon\" 2> /dev/null | cut -d , -f 2-").read())
 
-	x_values.append(next(index))
-	if dBm_signal < 0: # If recieved dBm is normal, use it
-		global dBm_fallback
-		dBm_fallback = dBm_signal # Save current signal for line 50
-		y_values.append(dBm_signal)
-	elif 'dBm_fallback' in globals(): # If recieved dBm signal is broken, use last known dBm value (dBm_fallback)
-		y_values.append(dBm_fallback)
-	else: # If recieved dBm signal is broken, but there is no fallback, use -65 dBm (Can only be the first recieved signal)
-		y_values.append(-60)
-	plt.cla()
-	plt.plot(x_values, y_values, color='#ff9900')
-	plt.pause(0.003)
+	signal_transfer(dBm_signal)
 
 def mode3_probe_frames(i): # Probe Request Frames
 	if platform == "linux":
@@ -151,18 +132,7 @@ def mode3_probe_frames(i): # Probe Request Frames
 	elif platform == "darwin":
 		dBm_signal = int(os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal -f \"type mgt subtype probe-req\" 2> /dev/null | cut -d , -f 2-").read())
 
-	x_values.append(next(index))
-	if dBm_signal < 0: # If recieved dBm is normal, use it
-		global dBm_fallback
-		dBm_fallback = dBm_signal # Save current signal for line 50
-		y_values.append(dBm_signal)
-	elif 'dBm_fallback' in globals(): # If recieved dBm signal is broken, use last known dBm value (dBm_fallback)
-		y_values.append(dBm_fallback)
-	else: # If recieved dBm signal is broken, but there is no fallback, use -65 dBm (Can only be the first recieved signal)
-		y_values.append(-60)
-	plt.cla()
-	plt.plot(x_values, y_values, color='#ff9900')
-	plt.pause(0.003)
+	signal_transfer(dBm_signal)
 
 def mode3_auth_frames(i): # Authentication Frames
 	if platform == "linux":
@@ -170,21 +140,9 @@ def mode3_auth_frames(i): # Authentication Frames
 	elif platform == "darwin":
 		dBm_signal = int(os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal -f \"type mgt subtype auth\" 2> /dev/null | cut -d , -f 2-").read())
 
-	x_values.append(next(index))
-	if dBm_signal < 0: # If recieved dBm is normal, use it
-		global dBm_fallback
-		dBm_fallback = dBm_signal # Save current signal for line 50
-		y_values.append(dBm_signal)
-	elif 'dBm_fallback' in globals(): # If recieved dBm signal is broken, use last known dBm value (dBm_fallback)
-		y_values.append(dBm_fallback)
-	else: # If recieved dBm signal is broken, but there is no fallback, use -65 dBm (Can only be the first recieved signal)
-		y_values.append(-60)
-	plt.cla()
-	plt.plot(x_values, y_values, color='#ff9900')
-	plt.pause(0.003)
+	signal_transfer(dBm_signal)
 
 def mode4_file_analytics(): # Analyse PCAP files
-
 	print("\033[38;1;231m" + "\n\n  --- Access Points (MAC Address, SSID) ---\n" + "\033[0m")
 	os.system("tshark -r " + file + " -T fields -e wlan.sa -e wlan.ssid -Y \"wlan.fc.type_subtype == 8 and !(wlan.ssid == \\\"\\\")\" | awk '!seen[$0]++'") # Filter for Beacon frames from AP's
 
@@ -192,7 +150,6 @@ def mode4_file_analytics(): # Analyse PCAP files
 	os.system("tshark -r " + file + " -T fields -e wlan.sa -e wlan.ssid -Y \"wlan.fc.type_subtype == 4 and !(wlan.ssid == \\\"\\\")\" | awk '!seen[$0]++'") # Filter for Probe Request from stations
 
 def mode5_from_file(): # Track MAC address from file
-
 	os.system("tshark -r " + file + " -T fields -e radiotap.dbm_antsignal -Y \"wlan.sa == " + device + "\" 2> /dev/null | cut -d , -f 2- > tmp_dBmonster.txt") # Filter Signals and save them to temporary file
 
 	with open('tmp_dBmonster.txt') as dBm_signal:
