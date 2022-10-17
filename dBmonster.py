@@ -275,6 +275,8 @@ while True:
 		fig.canvas.manager.set_window_title("dBmonster: " + device) # Window title
 		ax.set_xlabel('Amount of recieved packets') # Graph x axis label text
 		ax.set_ylabel('Signal strength [dBm]') # Graph y axis label text
+		ax.xaxis.label.set_color('#3f64d9') # Graph x axis label color
+		ax.yaxis.label.set_color('#3f64d9') # Graph y axis label color
 		graph()
 		mode5_from_file()
 		plt.show()
