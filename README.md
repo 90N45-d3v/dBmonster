@@ -34,7 +34,7 @@
 | Track & scan PCAP files | ✅ | ✅ |
 | Scanning for AP | ✅ | ✅ |
 | Scanning for STA | ✅ | |
-| Beep when device found | ❓ | ✅ |
+| Voice notification when device is found | ✅ | ✅ |
 
 ## Short preview (Realtime MAC Address Tracking)
 
