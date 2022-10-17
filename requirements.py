@@ -49,7 +49,7 @@ if platform == "darwin": # MacOS
 if platform == "linux": # Linux
 	root_check()
 	print("\033[38;5;206m" + "[!]" + "\033[39m" + " Installing tshark, aircrack-ng, network-manager, wireless-tools and iproute2 with APT...")
-	os.system("apt install tshark aircrack-ng network-manager wireless-tools iproute2")
+	os.system("apt install tshark aircrack-ng network-manager wireless-tools iproute2 espeak")
 
 print("\033[38;5;206m" + "[!]" + "\033[39m" + " Installing matplotlib from pip...")
 os.system("pip install matplotlib")
