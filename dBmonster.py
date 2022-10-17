@@ -59,15 +59,6 @@ def root_check():
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " This tool needs root privileges (try: sudo)\n")
 		exit()
 
-def sound_message():
-	# Play sound if found...
-	if platform == "linux": # Linux
-		dBm_signal = os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " > /dev/null 2> /dev/null").read()
-	elif platform == "darwin": # MacOS
-		dBm_signal = os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " > /dev/null 2> /dev/null").read()
-	print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " STARTING TRACKING...")
-	print("\a\a")
-
 def graph(): # Plot figure
 	fig.set_facecolor('black') # Window bg color
 	ax.set_facecolor('black') # Graph bg color
@@ -189,7 +180,13 @@ while True:
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Setting " + interface + " to channel " + channel + "...")
 		set_channel()
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Searching for " + device + " on channel " + channel + "...")
-		sound_message()
+		if platform == "linux": # Linux
+			os.system("tshark -i " + interface + " -c 1 ether src " + device + " 2> /dev/null > /dev/null")
+			os.system("espeak \"device detected\" 2> /dev/null > /dev/null") # Play sound message if found...
+		elif platform == "darwin": # MacOS
+			os.system("tshark -i " + interface + " -I -c 1 ether src " + device + " 2> /dev/null > /dev/null")
+			os.system("say device detected") # Play sound message if found...
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " START TRACKING...\n")
 		fig.canvas.manager.set_window_title("dBmonster: " + device) # Window title
 		graph()
 		animation = FuncAnimation(fig, mode2_update, 2000)
@@ -211,24 +208,52 @@ while True:
 		set_channel()
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Searching for specific 802.11 frame on channel " + channel + "...")
 		if sub_mode == "1":
+			if platform == "linux":
+				os.system("tshark -i " + interface + " -c 1 -f \"type mgt subtype deauth\" 2> /dev/null > /dev/null")
+				os.system("espeak \"deauthentication frame detected\" 2> /dev/null > /dev/null") # Play sound message if found...
+			elif platform == "darwin":
+				os.system("tshark -i " + interface + " -I -c -f \"type mgt subtype deauth\" 2> /dev/null > /dev/null")
+				os.system("say deauthentication frame detected") # Play sound message if found...
+			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " START TRACKING...\n")
 			fig.canvas.manager.set_window_title("dBmonster: Deauthentication Frames") # Window title
 			graph()
 			animation = FuncAnimation(fig, mode3_deauth_frames, 2000)
 			plt.show()
 
 		elif sub_mode == "2":
+			if platform == "linux":
+				os.system("tshark -i " + interface + " -c 1 -f \"type mgt subtype auth\" 2> /dev/null > /dev/null")
+				os.system("espeak \"authentication frame detected\" 2> /dev/null > /dev/null") # Play sound message if found...
+			elif platform == "darwin":
+				os.system("tshark -i " + interface + " -I -c 1 -f \"type mgt subtype auth\" 2> /dev/null > /dev/null")
+				os.system("say authentication frame detected") # Play sound message if found...
+			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " START TRACKING...\n")
 			fig.canvas.manager.set_window_title("dBmonster: Authentication Frames") # Window title
 			graph()
 			animation = FuncAnimation(fig, mode3_auth_frames, 2000)
 			plt.show()
 
 		elif sub_mode == "3":
+			if platform == "linux":
+				os.system("tshark -i " + interface + " -c 1 -f \"type mgt subtype probe-req\" 2> /dev/null > /dev/null")
+				os.system("espeak \"probe request detected\" 2> /dev/null > /dev/null") # Play sound message if found...
+			elif platform == "darwin":
+				os.system("tshark -i " + interface + " -I -c 1 -f \"type mgt subtype probe-req\" 2> /dev/null > /dev/null")
+				os.system("say probe request detected") # Play sound message if found...
+			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " START TRACKING...\n")
 			fig.canvas.manager.set_window_title("dBmonster: Probe Request Frames") # Window title
 			graph()
 			animation = FuncAnimation(fig, mode3_probe_frames, 2000)
 			plt.show()
 
 		elif sub_mode == "4":
+			if platform == "linux":
+				os.system("tshark -i " + interface + " -c 1 -f \"type mgt subtype beacon\" 2> /dev/null > /dev/null")
+				os.system("espeak \"beacon frame detected\" 2> /dev/null > /dev/null") # Play sound message if found...
+			elif platform == "darwin":
+				os.system("tshark -i " + interface + " -I -c 1 -f \"type mgt subtype beacon\" 2> /dev/null > /dev/null")
+				os.system("say beacon frame detected") # Play sound message if found...
+			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " START TRACKING...\n")
 			fig.canvas.manager.set_window_title("dBmonster: Beacon Frames") # Window title
 			graph()
 			animation = FuncAnimation(fig, mode3_beacon_frames, 2000)
