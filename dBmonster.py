@@ -134,10 +134,10 @@ def mode3_auth_frames(i): # Authentication Frames
 	signal_transfer(dBm_signal)
 
 def mode4_file_analytics(): # Analyse PCAP files
-	print("\033[38;1;231m" + "\n\n  --- Access Points (MAC Address, SSID) ---\n" + "\033[0m")
+	print("\033[38;1;231m" + "\n\n  --- Access Points ---\n\nMAC Address\t\tSSID" + "\033[0m")
 	os.system("tshark -r " + file + " -T fields -e wlan.sa -e wlan.ssid -Y \"wlan.fc.type_subtype == 8 and !(wlan.ssid == \\\"\\\")\" | awk '!seen[$0]++'") # Filter for Beacon frames from AP's
 
-	print("\033[38;1;231m" + "\n\n  --- Stations (MAC Address, Searching for SSID) ---\n" + "\033[0m")
+	print("\033[38;1;231m" + "\n\n  --- Stations ---\n\nMAC Address\t\tSearching for SSID" + "\033[0m")
 	os.system("tshark -r " + file + " -T fields -e wlan.sa -e wlan.ssid -Y \"wlan.fc.type_subtype == 4 and !(wlan.ssid == \\\"\\\")\" | awk '!seen[$0]++'") # Filter for Probe Request from stations
 
 def mode5_from_file(): # Track MAC address from file
