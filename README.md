@@ -51,6 +51,7 @@ sudo python requirements.py
 # Start dBmonster
 sudo python dBmonster.py
 ````
+###### * *⚠️ Due to a bug in matplotlib, Python 3.11 is not supported yet. Please use Python ≤ 3.10*
 
 ## Has been successfully tested  on...
 
