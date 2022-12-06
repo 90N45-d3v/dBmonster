@@ -2,6 +2,7 @@
 # by 90N45 - github.com/90N45-d3v
 
 import os
+import time
 from sys import platform
 from itertools import count
 import matplotlib.pyplot as plt
@@ -50,7 +51,18 @@ def interface_check():
 			os.system("ip link set " + interface + " up")
 
 	if platform == "darwin": # On MacOS you only need to enable WiFi
-		os.popen("airport " + interface + " -z") # Disconnect from WiFi network if connected
+		os.system("airport " + interface + " -z") # Disconnect from WiFi network if connected
+		os.system("tshark -i en0 -I -c 1 > /dev/null 2> /dev/null") # Just use tshark for a second
+		time.sleep(1)
+
+		wifi_state = int(os.popen("sudo airport en0 -I | grep init -c").read()) # On MacOS "Ventura" (at least mine) are issues disconnecting from wireless networks
+
+		if wifi_state == 0:
+			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Please disconnect from the current WLAN manually...")
+
+			while wifi_state == 0: # Loop till you are disconnected from any WLAN
+				time.sleep(1)
+				wifi_state = int(os.popen("sudo airport en0 -I | grep init -c").read())
 
 def root_check():
 	user = os.popen("whoami") # Get current user who runs dBmonster
