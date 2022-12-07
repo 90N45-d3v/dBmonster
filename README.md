@@ -58,7 +58,7 @@ sudo python dBmonster.py
 | Platform 💻 | WiFi Adapter 📡 |
 | ------- | --------- |
 | Kali Linux | ALFA AWUS036NHA, DIY [Bi-Quad WiFi Antenna](https://www.instructables.com/Bi-Quad-WiFi-Antenna/) |
-| MacOS Monterey | Internal card 802.11 a/b/g/n/ac (MBP 2019) |
+| MacOS Ventura | Internal card 802.11 a/b/g/n/ac (MBP 2019) |
 ###### * *should work on any MacOS or Debian based system and with every WiFi card that supports monitor-mode*
 
 ## Troubleshooting for MacOS
