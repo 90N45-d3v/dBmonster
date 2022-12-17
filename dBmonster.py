@@ -2,6 +2,10 @@
 # by 90N45 - github.com/90N45-d3v
 
 import os
+
+os.system("clear")
+print("\r\033[38;5;172m" + "\n                                                   --=-+-=--\n                                                        \\\n                                                   ---=--+--=---\n                 ( ( >*< ) )                             |\\\n     _  ____          |                      _     ---=----+----=---\n    | ||  _ \\         |                     | |          |\n  __| || |_) | _ __  /_\\   ___   _ __   ___ | |_   ___  _|__\n / _` ||  _ < | '_ `'_  | / _ \\ | '_ \\ / __||  _| / _ \\|  __|\n| (_| || |_) || | | | | || (_) || | | |\\__ \\| |_ |  __/| |\n \\__,_||____/ |_| |_| |_| \\___/ |_| |_||___/ \\__| \\___||_|" + "\033[38;5;27m" + "\nby github.com/90N45-d3v" + "\033[39m" + "\033[38;1;231m" + "\n\n Launching dBmonster...")
+
 import time
 from sys import platform
 from itertools import count
@@ -144,15 +148,61 @@ def mode3_auth_frames(i): # Authentication Frames
 		dBm_signal = int(os.popen("tshark -i " + interface + " -I -c 1 -T fields -e radiotap.dbm_antsignal -f \"type mgt subtype auth\" 2> /dev/null | cut -d , -f 2-").read())
 
 	signal_transfer(dBm_signal)
+ 
+def mode4_chase_detector(): # Track your tracker
+	device_list = {}
+	splt = "-"
 
-def mode4_file_analytics(): # Analyse PCAP files
+	if platform == "linux":
+		while True:
+			probe = str(os.popen("tshark -i " + interface + " -c 1 -E separator=\"-\" -T fields -e frame.time_epoch -e wlan.sa_resolved -e wlan.sa -f \"type mgt subtype probe-req\" 2> /dev/null").read())
+			time = probe.partition(splt)[0]
+			device = probe.partition(splt)[2].partition(splt)[2].partition("\n")[0].upper()
+			vendor = probe.partition(splt)[2].partition("_")[0]
+			unknown = probe.partition(splt)[2]
+
+			if device in device_list:
+				last_seen = device_list.get(device)
+				device_list[device] = time
+				if float(time) - float(last_seen) > float(interval):
+					if vendor == unknown:
+						print("\033[38;5;206m" + "\n [!]" + "\033[0m" + "\033[38;1;231m" + " YOU'VE BEEN STALKED" + "\033[0m" + " by " + device)
+					else:
+						print("\033[38;5;206m" + "\n [!]" + "\033[0m" + "\033[38;1;231m" + " YOU'VE BEEN STALKED" + "\033[0m" + " by " + device + " (Vendor: " + vendor + ")")
+					os.system("espeak \"eeeee\" 2> /dev/null > /dev/null")
+			else:
+				device_list[device] = time
+				# print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " New device found: " + device)
+
+	elif platform == "darwin":
+		while True:
+			probe = str(os.popen("tshark -i " + interface + " -c 1 -I -E separator=\"-\" -T fields -e frame.time_epoch -e wlan.sa_resolved -e wlan.sa -f \"type mgt subtype probe-req\" 2> /dev/null").read())
+			time = probe.partition(splt)[0]
+			device = probe.partition(splt)[2].partition(splt)[2].partition("\n")[0].upper()
+			vendor = probe.partition(splt)[2].partition("_")[0]
+			unknown = probe.partition(splt)[2]
+
+			if device in device_list:
+				last_seen = device_list.get(device)
+				device_list[device] = time
+				if float(time) - float(last_seen) > float(interval):
+					if vendor == unknown:
+						print("\033[38;5;206m" + "\n [!]" + "\033[0m" + "\033[38;1;231m" + " YOU'VE BEEN STALKED" + "\033[0m" + " by " + device)
+					else:
+						print("\033[38;5;206m" + "\n [!]" + "\033[0m" + "\033[38;1;231m" + " YOU'VE BEEN STALKED" + "\033[0m" + " by " + device + " (Vendor: " + vendor + ")")
+					os.system("afplay /System/Library/Sounds/Sosumi.aiff")
+			else:
+				device_list[device] = time
+				# print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " New device found: " + device)
+
+def mode5_file_analytics(): # Analyse PCAP files
 	print("\033[38;1;231m" + "\n\n  --- Access Points ---\n\nMAC Address\t\tSSID" + "\033[0m")
 	os.system("tshark -r " + file + " -T fields -e wlan.sa -e wlan.ssid -Y \"wlan.fc.type_subtype == 8 and !(wlan.ssid == \\\"\\\")\" | awk '!seen[$0]++'") # Filter for Beacon frames from AP's
 
 	print("\033[38;1;231m" + "\n\n  --- Stations ---\n\nMAC Address\t\tSearching for SSID" + "\033[0m")
 	os.system("tshark -r " + file + " -T fields -e wlan.sa -e wlan.ssid -Y \"wlan.fc.type_subtype == 4 and !(wlan.ssid == \\\"\\\")\" | awk '!seen[$0]++'") # Filter for Probe Request from stations
 
-def mode5_from_file(): # Track MAC address from file
+def mode6_from_file(): # Track MAC address from file
 	os.system("tshark -r " + file + " -T fields -e radiotap.dbm_antsignal -Y \"wlan.sa == " + device + "\" 2> /dev/null | cut -d , -f 2- > tmp_dBmonster.txt") # Filter Signals and save them to temporary file
 
 	with open('tmp_dBmonster.txt') as dBm_signal:
@@ -175,7 +225,7 @@ while True:
 	root_check()
 	interface_list()
 
-	mode = input("\033[38;1;231m" + "\n\n  --- OPTIONS ---\n\n[1]" + "\033[0m" + "\tRecon Of Wireless Landscape\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tRealtime MAC Address Tracking\n" + "\033[38;1;231m" + "[3]" + "\033[0m" + "\tAdvanced 802.11 Frame Tracking\n\n" + "\033[38;1;231m" + "[4]" + "\033[0m" + "\tPCAP File Analytics\n" + "\033[38;1;231m" + "[5]" + "\033[0m" + "\tTracking From PCAP File\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tEXIT" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
+	mode = input("\033[38;1;231m" + "\n\n  --- OPTIONS ---\n\n[1]" + "\033[0m" + "\tRecon Of Wireless Landscape\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tRealtime MAC Address Tracking\n" + "\033[38;1;231m" + "[3]" + "\033[0m" + "\tAdvanced 802.11 Frame Tracking\n" + "\033[38;1;231m" + "[4]" + "\033[0m" + "\tDetection of Potential Stalkers\n\n" + "\033[38;1;231m" + "[5]" + "\033[0m" + "\tPCAP File Analytics\n" + "\033[38;1;231m" + "[6]" + "\033[0m" + "\tTracking From PCAP File\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tEXIT" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
 
 	if mode == "1": # Recon
 		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
@@ -184,7 +234,7 @@ while True:
 		input("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Press the enter key to continue... (For tracking in realtime, remind the MAC Address and channel your target has!)")
 		continue
 
-	if mode == "2": # Track MAC address
+	elif mode == "2": # Track MAC address
 		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
 		device = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " MAC address to track: ")
 		channel = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " WiFi channel from MAC address to track: ")
@@ -206,7 +256,7 @@ while True:
 		print("\033[38;1;231m" + "\nGOOD BYE!\n" + "\033[0m")
 		exit()
 
-	if mode == "3": # Advanced 802.11 Frame Tracking
+	elif mode == "3": # Advanced 802.11 Frame Tracking
 		os.system("clear")
 		banner()
 		interface_list()
@@ -273,14 +323,25 @@ while True:
 		print("\033[38;1;231m" + "\nGOOD BYE!\n" + "\033[0m")
 		exit()
 
-	if mode == "4": # PCAP File Analytics
+	elif mode == "4": # Track your tracker
+		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
+		channel = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " WiFi channel to use (not that important here): ")
+		interval = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " Time spent with a device until the alarm (in seconds | 100s = 1.6min): ")
+		interface_check()
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Setting " + interface + " to channel " + channel + "...")
+		set_channel()
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Search for devices that have been sending probe requests for over " + interval + " seconds...")
+		mode4_chase_detector()
+		continue
+
+	elif mode == "5": # PCAP File Analytics
 		file = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Enter path to PCAP file: ")
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Analyzing file " + file + "...")
-		mode4_file_analytics()
+		mode5_file_analytics()
 		input("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Press the enter key to continue... (For tracking from file, remind the MAC Address your target has!)")
 		continue
 
-	if mode == "5": # Track MAC address from file
+	elif mode == "6": # Track MAC address from file
 		file = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Enter path to PCAP file: ")
 		device = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " MAC address to track: ")
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Searching for " + device + " in file " + file + "...")
@@ -290,13 +351,13 @@ while True:
 		ax.xaxis.label.set_color('#3f64d9') # Graph x axis label color
 		ax.yaxis.label.set_color('#3f64d9') # Graph y axis label color
 		graph()
-		mode5_from_file()
+		mode6_from_file()
 		plt.show()
 		if os.path.exists("tmp_dBmonster.txt"): # If it exists, delete temporary file
 			os.remove("tmp_dBmonster.txt")
 		continue
 
-	if mode == "0": # EXIT
+	elif mode == "0": # EXIT
 		if os.path.exists("tmp_dBmonster.txt"): # If it exists, delete temporary file
 			os.remove("tmp_dBmonster.txt")
 
