@@ -9,9 +9,7 @@
 </p>
 
 <p align="center">
- With dBmonster you are able to scan for nearby WiFi devices and track them trough the signal strength (<a href="https://en.m.wikipedia.org/wiki/DBm">dBm</a>) of their sent packets (sniffed with <a href="https://tshark.dev/setup/about/#what-is-tsharkdev">TShark</a>).
- These dBm values will be plotted to a graph with <a href="https://matplotlib.org/">matplotlib</a>.
- It can help you to identify the exact location of nearby WiFi devices (use a <a href="https://simplewifi.com/blogs/news/omni-directional-vs-antennadirectional-antenna">directional WiFi antenna</a> for the best results) or to find out how your <a href="https://www.makeuseof.com/10-diy-long-range-wi-fi-antennas-you-can-make-at-home/">self made antenna</a> works the best (<a href="https://help.ui.com/hc/en-us/articles/115012664088-UniFi-Introduction-to-Antenna-Radiation-Patterns">antenna radiation patterns</a>).
+ With dBmonster you are able to scan for nearby WiFi devices and track them trough the signal strength (<a href="https://en.m.wikipedia.org/wiki/DBm">dBm</a>) of their sent packets. Identify the exact location of nearby WiFi devices (use a <a href="https://simplewifi.com/blogs/news/omni-directional-vs-antennadirectional-antenna">directional WiFi antenna</a> for the best results) or find out in which direction your (<a href="https://www.makeuseof.com/10-diy-long-range-wi-fi-antennas-you-can-make-at-home/">self made</a>) antenna works the best (<a href="https://help.ui.com/hc/en-us/articles/115012664088-UniFi-Introduction-to-Antenna-Radiation-Patterns">antenna radiation patterns</a>).</br>In addition, there are features such as tracking the signal strength of packet types that are often abused in WiFi attacks (e.g. <a href="https://blog.spacehuhn.com/wifi-deauthentication-frame">Deauthentication Frames</a>) to determine the location of someone attacking your network.</br>You can also check for devices that are sending <a href="https://mrncciew.com/2014/10/27/cwap-802-11-probe-requestresponse/">Probe Requests</a> for an unusual long time. You then will be notified when dBmonster detects that a stalker’s device is following you (Inspiration: <a href="https://github.com/azmatt">Matt Edmondson</a>’s <a href="https://i.blackhat.com/USA-22/Thursday/US-22-Edmondson-Chasing-Your-Tail.pdf">BlackHat article</a>).
 </p>
 
 ## Table of contents
@@ -32,13 +30,14 @@
 | Track & scan on 5GHz | ✅ | ✅ |
 | Track 802.11 frames (ex. deauth. frames) | ✅ | ✅ |
 | Track & scan PCAP files | ✅ | ✅ |
+| Detection of potential stalkers | ✅ | ✅ |
 | Scanning for AP | ✅ | ✅ |
 | Scanning for STA | ✅ | |
 | Voice notification when device is found | ✅ | ✅ |
 
-## Short preview (Realtime MAC Address Tracking)
+## Short preview (Advanced 802.11 Frame Tracking)
 
-https://user-images.githubusercontent.com/79598596/194769598-96d2d838-3db1-4ef5-bf04-77abb75b8d98.mp4
+https://user-images.githubusercontent.com/79598596/208249552-48a56e68-9764-4f45-8aca-ba64a1a048c1.mov
 
 ## Installation
 ````
@@ -62,7 +61,7 @@ sudo python dBmonster.py
 ###### * *should work on any MacOS or Debian based system and with every WiFi card that supports monitor-mode*
 
 ## Troubleshooting for MacOS
-Normally, you can only enable monitor-mode on the internal wifi card from MacOS with the [airport](https://osxdaily.com/2007/01/18/airport-the-little-known-command-line-wireless-utility/) utility from Apple. Somehow, wireshark (or here TShark) can enable it too on MacOS. Cool, but because of the MacOS system and Wireshark’s workaround, there are many issues running dBmonster on MacOS. After some time, it could freeze and/or you have to stop dBmonster/Tshark manually from the CLI with the ``ps`` command. If you want to run it anyway, here are some helpful tips:
+Normally, you can only enable monitor-mode on the internal wifi card from MacOS with the [airport](https://osxdaily.com/2007/01/18/airport-the-little-known-command-line-wireless-utility/) utility from Apple. Somehow, wireshark (or here TShark) can enable it too on MacOS. Cool, but because of the MacOS system and Wireshark’s workaround, there are many issues running dBmonster on MacOS. After some time, it could freeze and/or you have to stop dBmonster/TShark manually from the CLI with the ``ps`` command. If you want to run it anyway, here are some helpful tips:
 
 #### Kill dBmonster, if you can't stop it over the GUI
 
