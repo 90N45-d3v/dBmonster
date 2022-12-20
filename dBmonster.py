@@ -6,6 +6,7 @@ import os
 os.system("clear")
 print("\r\033[38;5;172m" + "\n                                                   --=-+-=--\n                                                        \\\n                                                   ---=--+--=---\n                 ( ( >*< ) )                             |\\\n     _  ____          |                      _     ---=----+----=---\n    | ||  _ \\         |                     | |          |\n  __| || |_) | _ __  /_\\   ___   _ __   ___ | |_   ___  _|__\n / _` ||  _ < | '_ `'_  | / _ \\ | '_ \\ / __||  _| / _ \\|  __|\n| (_| || |_) || | | | | || (_) || | | |\\__ \\| |_ |  __/| |\n \\__,_||____/ |_| |_| |_| \\___/ |_| |_||___/ \\__| \\___||_|" + "\033[38;5;27m" + "\nby github.com/90N45-d3v" + "\033[39m" + "\033[38;1;231m" + "\n\n Launching dBmonster...")
 
+import re
 import time
 from sys import platform
 from itertools import count
@@ -103,11 +104,23 @@ def mode1_recon(): # Scan for WiFi devices... On MacOS only Networks
 		os.system("airodump-ng " + interface + " --band abg") # --band for scanning 2.4 GHz and 5 GHz
 
 	elif platform == "darwin": # MacOS
-		print("\n")
+		print("\n\n \033[38;1;231m --- ACCESS POINTS ---\n\033[0m")
 		os.system("airport " + interface + " scan")
+		print("\n\n \033[38;1;231m --- ASSOCIATED CLIENTS (2.4GHz) ---\n\033[0m")
 
-	else:
-		exit()
+		os.system("airport " + interface + " -c2")
+		sta_1 = os.popen("tshark --autostop duration:15 -i " + interface + " -I -E separator=\"#\" -T fields -e wlan.da -e wlan.ds.current_channel -e wlan.ssid -f \"type mgt subtype probe-resp\" 2> /dev/null | sort | uniq").read()
+		os.system("airport " + interface + " -c5")
+		sta_2 = os.popen("tshark --autostop duration:15 -i " + interface + " -I -E separator=\"#\" -T fields -e wlan.da -e wlan.ds.current_channel -e wlan.ssid -f \"type mgt subtype probe-resp\" 2> /dev/null | sort | uniq").read()
+		os.system("airport " + interface + " -c8")
+		sta_3 = os.popen("tshark --autostop duration:15 -i " + interface + " -I -E separator=\"#\" -T fields -e wlan.da -e wlan.ds.current_channel -e wlan.ssid -f \"type mgt subtype probe-resp\" 2> /dev/null | sort | uniq").read()
+		os.system("airport " + interface + " -c11")
+		sta_4 = os.popen("tshark --autostop duration:15 -i " + interface + " -I -E separator=\"#\" -T fields -e wlan.da -e wlan.ds.current_channel -e wlan.ssid -f \"type mgt subtype probe-resp\" 2> /dev/null | sort | uniq").read()
+
+		stations = sta_1 + sta_2 + sta_3 + sta_4
+		stations = stations.replace("#", "\t").replace("\n\n","\n")
+		print("MAC ADDRESS\t\tCHANNEL\tCONNECTED")
+		print(stations)
 
 def mode2_update(i): # Track MAC address
 	if platform == "linux": # Linux
@@ -229,6 +242,9 @@ while True:
 
 	if mode == "1": # Recon
 		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
+		interface_check()
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Scanning the wireless landscape. This may take some time...")
+		time.sleep(3.5)
 		os.system("clear")
 		mode1_recon()
 		input("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Press the enter key to continue... (For tracking in realtime, remind the MAC Address and channel your target has!)")
