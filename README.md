@@ -32,7 +32,7 @@
 | Track & scan PCAP files | ✅ | ✅ |
 | Detection of potential stalkers | ✅ | ✅ |
 | Scanning for AP | ✅ | ✅ |
-| Scanning for STA | ✅ | |
+| Scanning for STA | ✅ | ☑️ |
 | Voice notification when device is found | ✅ | ✅ |
 
 ## Short preview (Advanced 802.11 Frame Tracking)
@@ -92,5 +92,4 @@ Press control + c after a few seconds
 
 ### Additional information 
 - If the tracked WiFi device is out of range or doesn't send any packets, the graph stops plotting till there is new data. So don't panic ;)
-- dBmonster wasn't tested on all systems... If there are any errors or something is going wrong, contact me.
-- If you used dBmonster on a non-listed Platform or WiFi Adapter, please open an issue (with Platform and WiFi Adapter information) and I will add your specification to the README.md
+- dBmonster wasn't tested on all systems... If there are any errors or something is going wrong, contact me. (Of course you can also contact me if you liked my project!)
