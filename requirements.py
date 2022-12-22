@@ -2,7 +2,9 @@
 # by 90N45 - github.com/90N45-d3v
 
 import os
+import sys
 from sys import platform
+import subprocess
 
 ### functions
 
@@ -51,7 +53,8 @@ if platform == "linux": # Linux
 	print("\033[38;5;206m" + "[!]" + "\033[39m" + " Installing tshark, aircrack-ng, network-manager, wireless-tools, iproute2 and espeak with APT...")
 	os.system("apt install tshark aircrack-ng network-manager wireless-tools iproute2 espeak")
 
-print("\033[38;5;206m" + "[!]" + "\033[39m" + " Installing matplotlib from pip...")
-os.system("pip install matplotlib")
+print("\033[38;5;206m" + "[!]" + "\033[39m" + " Installing matplotlib and mac-vendor-lookup from pip...")
+subprocess.run([sys.executable, '-m', 'pip', 'install', 'matplotlib'])
+subprocess.run([sys.executable, '-m', 'pip', 'install', 'mac-vendor-lookup'])
 
 print("\033[38;1;231m" + "\nInstallation completed!\n" + "\033[0m")

@@ -8,6 +8,7 @@ print("\r\033[38;5;172m" + "\n                                                  
 
 import re
 import time
+import requests
 from sys import platform
 from itertools import count
 import matplotlib.pyplot as plt
@@ -41,9 +42,6 @@ def set_channel(): # Change channel on your WiFi card
 	elif platform == "darwin": # MacOS
 		os.popen("airport " + interface + " -c" + channel)
 
-	else:
-		exit()
-
 def interface_check():
 	if platform == "linux": # On linux, your WiFi card needs to be set in monitor mode by yourself
 		mon_check = os.popen("iwconfig " + interface + " | grep Monitor -c").read()
@@ -55,7 +53,7 @@ def interface_check():
 			os.system("iw " + interface + " set type monitor")
 			os.system("ip link set " + interface + " up")
 
-	if platform == "darwin": # On MacOS you only need to enable WiFi
+	elif platform == "darwin": # On MacOS you only need to enable WiFi
 		os.system("airport " + interface + " -z") # Disconnect from WiFi network if connected
 		os.system("tshark -i en0 -I -c 1 > /dev/null 2> /dev/null") # Just use tshark for a second
 		time.sleep(1)
@@ -122,7 +120,41 @@ def mode1_recon(): # Scan for WiFi devices... On MacOS only Networks
 		print("MAC ADDRESS\t\tCHANNEL\tCONNECTED")
 		print(stations)
 
-def mode2_update(i): # Track MAC address
+def mode2_lookup(device):
+	mac_brick = device.replace(":", "", 2).partition(":")[0].upper()
+	chr_check = "MA-L," + mac_brick + ",\""
+	vendor = ""
+
+	if os.path.exists("vendor-db.csv") == False:
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Downloading missing database...")
+		mode2_update_vendors()
+
+	with open("vendor-db.csv") as csv:
+		for line in csv:
+			if mac_brick in line:
+				if chr_check in line:
+					vendor = line.partition("\"")[2].partition("\"")[0]
+				else:
+					vendor = line.partition(",")[2].partition(",")[2].partition(",")[0]
+	if vendor == "":
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Vendor not found... The MAC address might be randomized.")
+	else:
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " The device " + device + " is from " + vendor)
+
+def mode2_update_vendors():
+	try:
+		req = requests.get("https://standards-oui.ieee.org/oui/oui.csv")
+	except:
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Can't fetch database... Is your internet connection working?")
+		time.sleep(4)
+	else:
+		if os.path.exists("vendor-db.csv"):
+			os.remove("vendor-db.csv")
+
+		with open("vendor-db.csv", "wb") as file:
+			file.write(req.content)
+
+def mode3_update(i): # Track MAC address
 	if platform == "linux": # Linux
 		dBm_signal = int(os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal ether src " + device + " 2> /dev/null | cut -d , -f 2-").read())
 	elif platform == "darwin": # MacOS
@@ -130,7 +162,7 @@ def mode2_update(i): # Track MAC address
 
 	signal_transfer(dBm_signal)
 
-def mode3_deauth_frames(i): # Deauthentication Frames
+def mode4_deauth_frames(i): # Deauthentication Frames
 	if platform == "linux":
 		dBm_signal = int(os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal -f \"type mgt subtype deauth\" 2> /dev/null | cut -d , -f 2-").read())
 	elif platform == "darwin":
@@ -138,7 +170,7 @@ def mode3_deauth_frames(i): # Deauthentication Frames
 
 	signal_transfer(dBm_signal)
 
-def mode3_beacon_frames(i): # Beacon Frames
+def mode4_beacon_frames(i): # Beacon Frames
 	if platform == "linux":
 		dBm_signal = int(os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal -f \"type mgt subtype beacon\" 2> /dev/null | cut -d , -f 2-").read())
 	elif platform == "darwin":
@@ -146,7 +178,7 @@ def mode3_beacon_frames(i): # Beacon Frames
 
 	signal_transfer(dBm_signal)
 
-def mode3_probe_frames(i): # Probe Request Frames
+def mode4_probe_frames(i): # Probe Request Frames
 	if platform == "linux":
 		dBm_signal = int(os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal -f \"type mgt subtype probe-req\" 2> /dev/null | cut -d , -f 2-").read())
 	elif platform == "darwin":
@@ -154,7 +186,7 @@ def mode3_probe_frames(i): # Probe Request Frames
 
 	signal_transfer(dBm_signal)
 
-def mode3_auth_frames(i): # Authentication Frames
+def mode4_auth_frames(i): # Authentication Frames
 	if platform == "linux":
 		dBm_signal = int(os.popen("tshark -i " + interface + " -c 1 -T fields -e radiotap.dbm_antsignal -f \"type mgt subtype auth\" 2> /dev/null | cut -d , -f 2-").read())
 	elif platform == "darwin":
@@ -162,7 +194,7 @@ def mode3_auth_frames(i): # Authentication Frames
 
 	signal_transfer(dBm_signal)
  
-def mode4_chase_detector(): # Track your tracker
+def mode5_chase_detector(): # Track your tracker
 	device_list = {}
 	splt = "-"
 
@@ -206,16 +238,15 @@ def mode4_chase_detector(): # Track your tracker
 					os.system("afplay /System/Library/Sounds/Sosumi.aiff")
 			else:
 				device_list[device] = time
-				# print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " New device found: " + device)
 
-def mode5_file_analytics(): # Analyse PCAP files
+def mode6_file_analytics(): # Analyse PCAP files
 	print("\033[38;1;231m" + "\n\n  --- Access Points ---\n\nMAC Address\t\tSSID" + "\033[0m")
 	os.system("tshark -r " + file + " -T fields -e wlan.sa -e wlan.ssid -Y \"wlan.fc.type_subtype == 8 and !(wlan.ssid == \\\"\\\")\" | awk '!seen[$0]++'") # Filter for Beacon frames from AP's
 
 	print("\033[38;1;231m" + "\n\n  --- Stations ---\n\nMAC Address\t\tSearching for SSID" + "\033[0m")
 	os.system("tshark -r " + file + " -T fields -e wlan.sa -e wlan.ssid -Y \"wlan.fc.type_subtype == 4 and !(wlan.ssid == \\\"\\\")\" | awk '!seen[$0]++'") # Filter for Probe Request from stations
 
-def mode6_from_file(): # Track MAC address from file
+def mode7_from_file(): # Track MAC address from file
 	os.system("tshark -r " + file + " -T fields -e radiotap.dbm_antsignal -Y \"wlan.sa == " + device + "\" 2> /dev/null | cut -d , -f 2- > tmp_dBmonster.txt") # Filter Signals and save them to temporary file
 
 	with open('tmp_dBmonster.txt') as dBm_signal:
@@ -238,7 +269,7 @@ while True:
 	root_check()
 	interface_list()
 
-	mode = input("\033[38;1;231m" + "\n\n  --- OPTIONS ---\n\n[1]" + "\033[0m" + "\tRecon Of Wireless Landscape\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tRealtime MAC Address Tracking\n" + "\033[38;1;231m" + "[3]" + "\033[0m" + "\tAdvanced 802.11 Frame Tracking\n" + "\033[38;1;231m" + "[4]" + "\033[0m" + "\tDetection of Potential Stalkers\n\n" + "\033[38;1;231m" + "[5]" + "\033[0m" + "\tPCAP File Analytics\n" + "\033[38;1;231m" + "[6]" + "\033[0m" + "\tTracking From PCAP File\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tEXIT" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
+	mode = input("\033[38;1;231m" + "\n\n  --- OPTIONS ---\n\n[1]" + "\033[0m" + "\tRecon Of Wireless Landscape\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tMAC Address Lookup\n\n" + "\033[38;1;231m" + "[3]" + "\033[0m" + "\tRealtime MAC Address Tracking\n" + "\033[38;1;231m" + "[4]" + "\033[0m" + "\tAdvanced 802.11 Frame Tracking\n" + "\033[38;1;231m" + "[5]" + "\033[0m" + "\tDetection of Potential Stalkers\n\n" + "\033[38;1;231m" + "[6]" + "\033[0m" + "\tPCAP File Analytics\n" + "\033[38;1;231m" + "[7]" + "\033[0m" + "\tTracking From PCAP File\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tEXIT" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
 
 	if mode == "1": # Recon
 		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
@@ -250,7 +281,22 @@ while True:
 		input("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Press the enter key to continue... (For tracking in realtime, remind the MAC Address and channel your target has!)")
 		continue
 
-	elif mode == "2": # Track MAC address
+	elif mode == "2":
+		os.system("clear")
+		banner()
+		interface_list()
+		sub_mode = input("\033[38;1;231m" + "\n\n  --- MAC Address Lookup ---\n\n[1]" + "\033[0m" + "\tLookup Vendor From MAC Address\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tUpdate Database\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tRETURN" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
+		if sub_mode == "0":
+			continue
+		elif sub_mode == "1":
+			device = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " MAC Address: ")
+			mode2_lookup(device)
+			input("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Press the enter key to continue...")
+		elif sub_mode == "2":
+			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Updating the vendor database...")
+			mode2_update_vendors()
+
+	elif mode == "3": # Track MAC address
 		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
 		device = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " MAC address to track: ")
 		channel = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " WiFi channel from MAC address to track: ")
@@ -267,12 +313,12 @@ while True:
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " START TRACKING...\n")
 		fig.canvas.manager.set_window_title("dBmonster: " + device) # Window title
 		graph()
-		animation = FuncAnimation(fig, mode2_update, 2000)
+		animation = FuncAnimation(fig, mode3_update, 2000)
 		plt.show()
 		print("\033[38;1;231m" + "\nGOOD BYE!\n" + "\033[0m")
 		exit()
 
-	elif mode == "3": # Advanced 802.11 Frame Tracking
+	elif mode == "4": # Advanced 802.11 Frame Tracking
 		os.system("clear")
 		banner()
 		interface_list()
@@ -295,7 +341,7 @@ while True:
 			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " START TRACKING...\n")
 			fig.canvas.manager.set_window_title("dBmonster: Deauthentication Frames") # Window title
 			graph()
-			animation = FuncAnimation(fig, mode3_deauth_frames, 2000)
+			animation = FuncAnimation(fig, mode4_deauth_frames, 2000)
 			plt.show()
 
 		elif sub_mode == "2":
@@ -308,7 +354,7 @@ while True:
 			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " START TRACKING...\n")
 			fig.canvas.manager.set_window_title("dBmonster: Authentication Frames") # Window title
 			graph()
-			animation = FuncAnimation(fig, mode3_auth_frames, 2000)
+			animation = FuncAnimation(fig, mode4_auth_frames, 2000)
 			plt.show()
 
 		elif sub_mode == "3":
@@ -321,7 +367,7 @@ while True:
 			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " START TRACKING...\n")
 			fig.canvas.manager.set_window_title("dBmonster: Probe Request Frames") # Window title
 			graph()
-			animation = FuncAnimation(fig, mode3_probe_frames, 2000)
+			animation = FuncAnimation(fig, mode4_probe_frames, 2000)
 			plt.show()
 
 		elif sub_mode == "4":
@@ -334,12 +380,12 @@ while True:
 			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " START TRACKING...\n")
 			fig.canvas.manager.set_window_title("dBmonster: Beacon Frames") # Window title
 			graph()
-			animation = FuncAnimation(fig, mode3_beacon_frames, 2000)
+			animation = FuncAnimation(fig, mode4_beacon_frames, 2000)
 			plt.show()
 		print("\033[38;1;231m" + "\nGOOD BYE!\n" + "\033[0m")
 		exit()
 
-	elif mode == "4": # Track your tracker
+	elif mode == "5": # Track your tracker
 		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
 		channel = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " WiFi channel to use (not that important here): ")
 		interval = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " Time spent with a device until the alarm (in seconds | 100s = 1.6min): ")
@@ -347,17 +393,17 @@ while True:
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Setting " + interface + " to channel " + channel + "...")
 		set_channel()
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Search for devices that have been sending probe requests for over " + interval + " seconds...")
-		mode4_chase_detector()
+		mode5_chase_detector()
 		continue
 
-	elif mode == "5": # PCAP File Analytics
+	elif mode == "6": # PCAP File Analytics
 		file = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Enter path to PCAP file: ")
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Analyzing file " + file + "...")
-		mode5_file_analytics()
+		mode6_file_analytics()
 		input("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Press the enter key to continue... (For tracking from file, remind the MAC Address your target has!)")
 		continue
 
-	elif mode == "6": # Track MAC address from file
+	elif mode == "7": # Track MAC address from file
 		file = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Enter path to PCAP file: ")
 		device = input("\033[38;5;172m" + "  [*]" + "\033[39m" + " MAC address to track: ")
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Searching for " + device + " in file " + file + "...")
@@ -367,7 +413,7 @@ while True:
 		ax.xaxis.label.set_color('#3f64d9') # Graph x axis label color
 		ax.yaxis.label.set_color('#3f64d9') # Graph y axis label color
 		graph()
-		mode6_from_file()
+		mode7_from_file()
 		plt.show()
 		if os.path.exists("tmp_dBmonster.txt"): # If it exists, delete temporary file
 			os.remove("tmp_dBmonster.txt")
