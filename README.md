@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
- With dBmonster you are able to scan for nearby WiFi devices and track them trough the signal strength (<a href="https://en.m.wikipedia.org/wiki/DBm">dBm</a>) of their sent packets. Identify the exact location of nearby WiFi devices (use a <a href="https://simplewifi.com/blogs/news/omni-directional-vs-antennadirectional-antenna">directional WiFi antenna</a> for the best results) or find out in which direction your (<a href="https://www.makeuseof.com/10-diy-long-range-wi-fi-antennas-you-can-make-at-home/">self made</a>) antenna works the best (<a href="https://help.ui.com/hc/en-us/articles/115012664088-UniFi-Introduction-to-Antenna-Radiation-Patterns">antenna radiation patterns</a>).</br>In addition, there are features such as tracking the signal strength of packet types that are often abused in WiFi attacks (e.g. <a href="https://blog.spacehuhn.com/wifi-deauthentication-frame">Deauthentication Frames</a>) to determine the location of someone attacking your network.</br>You can also check for devices that are sending <a href="https://mrncciew.com/2014/10/27/cwap-802-11-probe-requestresponse/">Probe Requests</a> for an unusual long time. You then will be notified when dBmonster detects that a stalker’s device is following you (Inspiration: <a href="https://github.com/azmatt">Matt Edmondson</a>’s <a href="https://i.blackhat.com/USA-22/Thursday/US-22-Edmondson-Chasing-Your-Tail.pdf">BlackHat article</a>).
+ With dBmonster, you are able to scan for nearby WiFi devices and track them through the signal strength (<a href="https://en.m.wikipedia.org/wiki/DBm">dBm</a>) of their sent packets. Therefore, you can identify the exact location of nearby WiFi devices (use a <a href="https://simplewifi.com/blogs/news/omni-directional-vs-antennadirectional-antenna">directional WiFi antenna</a> for the best results) or find out in which direction your (<a href="https://www.makeuseof.com/10-diy-long-range-wi-fi-antennas-you-can-make-at-home/">self made</a>) antenna works the best (<a href="https://help.ui.com/hc/en-us/articles/115012664088-UniFi-Introduction-to-Antenna-Radiation-Patterns">antenna radiation patterns</a>).</br>In addition, there are features such as tracking the signal strength of packet types that are often abused in WiFi attacks (ex. <a href="https://blog.spacehuhn.com/wifi-deauthentication-frame">Deauthentication Frames</a>) to determine the location of someone attacking your network.</br>You can also check for devices that are sending <a href="https://mrncciew.com/2014/10/27/cwap-802-11-probe-requestresponse/">Probe Requests</a> for an unusual long time. You will then be notified when dBmonster detects that a stalker’s device is following you (inspiration: <a href="https://github.com/azmatt">Matt Edmondson</a>’s <a href="https://i.blackhat.com/USA-22/Thursday/US-22-Edmondson-Chasing-Your-Tail.pdf">BlackHat article</a>).</br>All in all, it's a multitool for tracking and locating nearby devices via their activities in the radio frequency range.
 </p>
 
 ## Table of contents
@@ -33,6 +33,7 @@
 | Detection of potential stalkers | ✅ | ✅ |
 | Scanning for AP | ✅ | ✅ |
 | Scanning for STA | ✅ | ☑️ |
+| Offline MAC Adress Lookup | ✅ | ✅ |
 | Voice notification when device is found | ✅ | ✅ |
 
 ## Short preview (Advanced 802.11 Frame Tracking)
@@ -84,6 +85,9 @@ Press control + c after a few seconds
 ###### * *Please contact me on [twitter](https://twitter.com/90N45), if you have anymore problems*
 
 ## Working on...
+- RSSI at MAC Address Lookup if device is nearby
+- [WiGLE](https://wigle.net) API for MAC Address Lookup
+- SDR support for advanced operations
 - Capture signal strength data for offline graphs 
 - Generate multiple graphs in one coordinate system
 - MAC address assembler - Associate multiple random MAC addresses because of their similar dBm signal
