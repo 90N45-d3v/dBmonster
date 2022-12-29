@@ -22,6 +22,13 @@ index = count() # x axis is count of dBm values
 ax = plt.axes()
 fig = plt.gcf()
 
+wigle_api_key = ""
+
+if os.path.exists("WiGLE.key"):
+	key_file = open("WiGLE.key", "r")
+	wigle_api_key = key_file.read().replace("\n", "")
+	key_file.close()
+
 ### functions
 
 def banner():
@@ -55,7 +62,7 @@ def interface_check():
 
 	elif platform == "darwin": # On MacOS you only need to enable WiFi
 		os.system("airport " + interface + " -z") # Disconnect from WiFi network if connected
-		os.system("tshark -i en0 -I -c 1 > /dev/null 2> /dev/null") # Just use tshark for a second
+		os.system("tshark -i en0 -I -a duration:2 > /dev/null 2> /dev/null") # Just use tshark for a second
 		time.sleep(1)
 
 		wifi_state = int(os.popen("sudo airport en0 -I | grep init -c").read()) # On MacOS "Ventura" (at least mine) are issues disconnecting from wireless networks
@@ -73,6 +80,13 @@ def root_check():
 	if user.read() != "root\n":
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " This tool needs root privileges (try: sudo)\n")
 		exit()
+
+def net_check():
+	try:
+		requests.head("https://github.com/", timeout=3)
+		return True
+	except:
+		return False
 
 def graph(): # Plot figure
 	fig.set_facecolor('black') # Window bg color
@@ -116,7 +130,7 @@ def mode1_recon(): # Scan for WiFi devices... On MacOS only Networks
 		sta_4 = os.popen("tshark --autostop duration:15 -i " + interface + " -I -E separator=\"#\" -T fields -e wlan.da -e wlan.ds.current_channel -e wlan.ssid -f \"type mgt subtype probe-resp\" 2> /dev/null | sort | uniq").read()
 
 		stations = sta_1 + sta_2 + sta_3 + sta_4
-		stations = stations.replace("#", "\t").replace("\n\n","\n")
+		stations = stations.replace("#", "\t").replace("\n\n", "\n")
 		print("MAC ADDRESS\t\tCHANNEL\tCONNECTED")
 		print(stations)
 
@@ -129,6 +143,8 @@ def mode2_lookup(device):
 		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Downloading missing database...")
 		mode2_update_vendors()
 
+	print("\033[38;1;231m" + "\n\n --- OSINT Data ---\n" + "\033[0m")
+
 	with open("vendor-db.csv") as csv:
 		for line in csv:
 			if mac_brick in line:
@@ -136,23 +152,78 @@ def mode2_lookup(device):
 					vendor = line.partition("\"")[2].partition("\"")[0]
 				else:
 					vendor = line.partition(",")[2].partition(",")[2].partition(",")[0]
-	if vendor == "":
-		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Vendor not found... The MAC address might be randomized.")
+
+	if wigle_api_key != "":
+		connection = net_check()
+		if connection == True:
+			wigle_wifi_url = "https://api.wigle.net/api/v2/network/search?onlymine=false&freenet=false&paynet=false&resultsPerPage=1&netid=" + device.replace(":","%3A")
+			wigle_bt_url = "https://api.wigle.net/api/v2/bluetooth/search?onlymine=false&showBt=true&showBle=true&resultsPerPage=1&netid=" + device.replace(":","%3A")
+			headers = {'User-Agent': 'dBmonster', 'Authorization': 'Basic ' + wigle_api_key}
+
+			wigle_res = requests.get(wigle_wifi_url, headers=headers).json()
+			res_count = str(wigle_res).partition("'totalResults': ")[2].partition(",")[0]
+
+			if res_count == "0":
+				wigle_res = requests.get(wigle_bt_url, headers=headers).json()
+
+			wigle_type = str(wigle_res).partition("'type': '")[2].partition("'")[0]
+			wigle_ssid = str(wigle_res).partition("'ssid': '")[2].partition("'")[0]
+			wigle_country = str(wigle_res).partition("'country': '")[2].partition("'")[0]
+			wigle_city = str(wigle_res).partition("'city': '")[2].partition("'")[0]
+			wigle_street = str(wigle_res).partition("'road': '")[2].partition("'")[0]
+			wigle_housenumber = str(wigle_res).partition("'housenumber': ")[2].partition(",")[0]
+			wigle_long = str(wigle_res).partition("'trilong': ")[2].partition(",")[0]
+			wigle_lat = str(wigle_res).partition("'trilat': ")[2].partition(",")[0]
+
+			if wigle_ssid != "":
+				print("\033[38;1;231m" + "SSID: " + "\033[0m" + wigle_ssid)
+			if wigle_type == "infra":
+				print("\033[38;1;231m" + "Type: " + "\033[0m" + "WiFi AP")
+			elif wigle_type != "":
+				print("\033[38;1;231m" + "Type: " + "\033[0m" + wigle_type)
+			if vendor == "":
+				print("\033[38;1;231m" + "Vendor: " + "\033[0m" + "UNKNOWN")
+			else:
+				print("\033[38;1;231m" + "Vendor: " + "\033[0m" + vendor)
+			if wigle_country != "":
+				print("\033[38;1;231m" + "CC: " + "\033[0m" + wigle_country)
+			if wigle_city != "":
+				print("\033[38;1;231m" + "City: " + "\033[0m" + wigle_city)
+			if wigle_street != "" and wigle_housenumber != "None":
+				print("\033[38;1;231m" + "Road: " + "\033[0m" + wigle_street + " " + wigle_housenumber)
+			elif wigle_street != "" and wigle_housenumber == "None":
+				print("\033[38;1;231m" + "Road: " + "\033[0m" + wigle_street)
+			if wigle_long != "":
+				print("\033[38;1;231m" + "Longitude: " + "\033[0m" + wigle_long)
+			if wigle_lat != "":
+				print("\033[38;1;231m" + "Latitude: " + "\033[0m" + wigle_lat)
+		else:
+			if vendor == "":
+				print("\033[38;1;231m" + "Vendor: " + "\033[0m" + "UNKNOWN")
+			else:
+				print("\033[38;1;231m" + "Vendor: " + "\033[0m" + vendor)
 	else:
-		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " The device " + device + " is from " + vendor)
+		if vendor == "":
+			print("\033[38;1;231m" + "Vendor: " + "\033[0m" + "UNKNOWN")
+		else:
+			print("\033[38;1;231m" + "Vendor: " + "\033[0m" + vendor)
+
 
 def mode2_update_vendors():
-	try:
+	connection = net_check()
+
+	if connection == True:
 		req = requests.get("https://standards-oui.ieee.org/oui/oui.csv")
-	except:
-		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Can't fetch database... Is your internet connection working?")
-		time.sleep(4)
-	else:
+
 		if os.path.exists("vendor-db.csv"):
 			os.remove("vendor-db.csv")
 
 		with open("vendor-db.csv", "wb") as file:
 			file.write(req.content)
+	else:
+		print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Can't fetch database... Is your internet connection working?")
+		time.sleep(4)
+		exit()
 
 def mode3_update(i): # Track MAC address
 	if platform == "linux": # Linux
@@ -269,7 +340,7 @@ while True:
 	root_check()
 	interface_list()
 
-	mode = input("\033[38;1;231m" + "\n\n  --- OPTIONS ---\n\n[1]" + "\033[0m" + "\tRecon Of Wireless Landscape\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tMAC Address Lookup\n\n" + "\033[38;1;231m" + "[3]" + "\033[0m" + "\tRealtime MAC Address Tracking\n" + "\033[38;1;231m" + "[4]" + "\033[0m" + "\tAdvanced 802.11 Frame Tracking\n" + "\033[38;1;231m" + "[5]" + "\033[0m" + "\tDetection of Potential Stalkers\n\n" + "\033[38;1;231m" + "[6]" + "\033[0m" + "\tPCAP File Analytics\n" + "\033[38;1;231m" + "[7]" + "\033[0m" + "\tTracking From PCAP File\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tEXIT" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
+	mode = input("\033[38;1;231m" + "\n\n  --- OPTIONS ---\n\n[1]" + "\033[0m" + "\tRecon Of Wireless Landscape\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tMAC Address Information Gathering\n\n" + "\033[38;1;231m" + "[3]" + "\033[0m" + "\tRealtime MAC Address Tracking\n" + "\033[38;1;231m" + "[4]" + "\033[0m" + "\tAdvanced 802.11 Frame Tracking\n" + "\033[38;1;231m" + "[5]" + "\033[0m" + "\tDetection of Potential Stalkers\n\n" + "\033[38;1;231m" + "[6]" + "\033[0m" + "\tPCAP File Analytics\n" + "\033[38;1;231m" + "[7]" + "\033[0m" + "\tTracking From PCAP File\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tEXIT" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
 
 	if mode == "1": # Recon
 		interface = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Your WiFi interface: ")
@@ -285,7 +356,10 @@ while True:
 		os.system("clear")
 		banner()
 		interface_list()
-		sub_mode = input("\033[38;1;231m" + "\n\n  --- MAC Address Lookup ---\n\n[1]" + "\033[0m" + "\tLookup Vendor From MAC Address\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tUpdate Database\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tRETURN" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
+		if wigle_api_key == "":
+			sub_mode = input("\033[38;1;231m" + "\n\n  --- MAC Address Information Gathering ---\n\n[1]" + "\033[0m" + "\tCollect Data Via OSINT Sources\n\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tEnter Your WiGLE API Token\n" + "\033[38;1;231m" + "[3]" + "\033[0m" + "\tUpdate/Download Vendor Database\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tRETURN" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
+		else:
+			sub_mode = input("\033[38;1;231m" + "\n\n  --- MAC Address Information Gathering ---\n\n[1]" + "\033[0m" + "\tCollect Data Via OSINT Sources\n\n" + "\033[38;1;231m" + "[2]" + "\033[0m" + "\tUpdate Your WiGLE API Token\n" + "\033[38;1;231m" + "[3]" + "\033[0m" + "\tUpdate/Download Vendor Database\n\n" + "\033[38;1;231m" + "[0]" + "\033[0m" + "\tRETURN" + "\033[38;5;172m" + "\n\n  [*]" + "\033[0m" + " Choose Option: ")
 		if sub_mode == "0":
 			continue
 		elif sub_mode == "1":
@@ -293,6 +367,15 @@ while True:
 			mode2_lookup(device)
 			input("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Press the enter key to continue...")
 		elif sub_mode == "2":
+			if wigle_api_key == "":
+				wigle_api_key = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Enter your *encoded* API Token from wigle.net/account: ")
+			else:
+				wigle_api_key = input("\033[38;5;172m" + "\n  [*]" + "\033[39m" + " Enter your new encoded API Token: ")
+				os.remove("WiGLE.key")
+			os.system("touch WiGLE.key && echo " + wigle_api_key + " > WiGLE.key")
+			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " API-Token saved...")
+			time.sleep(3.5)
+		elif sub_mode == "3":
 			print("\033[38;5;206m" + "\n [!]" + "\033[39m" + " Updating the vendor database...")
 			mode2_update_vendors()
 
