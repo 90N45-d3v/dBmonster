@@ -33,7 +33,7 @@
 | Detection of potential stalkers | ✅ | ✅ |
 | Scanning for AP | ✅ | ✅ |
 | Scanning for STA | ✅ | ☑️ |
-| Offline MAC Adress Lookup | ✅ | ✅ |
+| MAC Address Information Gathering (OSINT) | ✅ | ✅ |
 | Voice notification when device is found | ✅ | ✅ |
 
 ## Short preview (Advanced 802.11 Frame Tracking)
