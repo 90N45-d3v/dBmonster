@@ -55,6 +55,5 @@ if platform == "linux": # Linux
 
 print("\033[38;5;206m" + "[!]" + "\033[39m" + " Installing matplotlib and mac-vendor-lookup from pip...")
 subprocess.run([sys.executable, '-m', 'pip', 'install', 'matplotlib'])
-subprocess.run([sys.executable, '-m', 'pip', 'install', 'mac-vendor-lookup'])
 
 print("\033[38;1;231m" + "\nInstallation completed!\n" + "\033[0m")
