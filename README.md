@@ -86,9 +86,8 @@ Press control + c after a few seconds
 
 ## Working on...
 - RSSI at MAC Address Lookup if device is nearby
-- [WiGLE](https://wigle.net) API for MAC Address Lookup
 - SDR support for advanced operations
-- Capture signal strength data for offline graphs 
+- Capture signal strength data for offline graphs
 - Generate multiple graphs in one coordinate system
 - MAC address assembler - Associate multiple random MAC addresses because of their similar dBm signal
 - PCAP File Analytics - Classify detected devices and calculate the average signal strength
